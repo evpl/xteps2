@@ -29,6 +29,7 @@ import static com.plugatar.xteps2.core.step.StepObjectUtils.EMPTY_STRING;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.artifactMapArgs;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.copyMapAndPutArgs;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.currentStepExecutor;
+import static com.plugatar.xteps2.core.step.StepObjectUtils.emptyKeyword;
 
 /**
  * TriConsumer step object.
@@ -52,7 +53,7 @@ public interface TriConsumerStep<C1, C2, C3> extends
   void accept(C1 c1, C2 c2, C3 c3);
 
   @Override
-  TriConsumerStep<C1, C2, C3> withArtifact(String key,
+  TriConsumerStep<C1, C2, C3> withArtifact(String name,
                                            Object value);
 
   /**
@@ -84,7 +85,7 @@ public interface TriConsumerStep<C1, C2, C3> extends
      *                        or if {@code action} arg is null
      */
     public Of(final ThTriConsumer<? super C1, ? super C2, ? super C3, ?> action) {
-      this(Keyword.EMPTY, EMPTY_STRING, Collections.emptyMap(), EMPTY_STRING, action);
+      this(emptyKeyword(), EMPTY_STRING, Collections.emptyMap(), EMPTY_STRING, action);
     }
 
     /**
@@ -134,7 +135,7 @@ public interface TriConsumerStep<C1, C2, C3> extends
      */
     public Of(final String name,
               final ThTriConsumer<? super C1, ? super C2, ? super C3, ?> action) {
-      this(Keyword.EMPTY, name, Collections.emptyMap(), EMPTY_STRING, action);
+      this(emptyKeyword(), name, Collections.emptyMap(), EMPTY_STRING, action);
     }
 
     /**
@@ -196,7 +197,7 @@ public interface TriConsumerStep<C1, C2, C3> extends
     public Of(final String name,
               final String desc,
               final ThTriConsumer<? super C1, ? super C2, ? super C3, ?> action) {
-      this(Keyword.EMPTY, name, Collections.emptyMap(), desc, action);
+      this(emptyKeyword(), name, Collections.emptyMap(), desc, action);
     }
 
     /**
@@ -264,7 +265,7 @@ public interface TriConsumerStep<C1, C2, C3> extends
     public Of(final String name,
               final Map<String, ?> params,
               final ThTriConsumer<? super C1, ? super C2, ? super C3, ?> action) {
-      this(Keyword.EMPTY, name, params, EMPTY_STRING, action);
+      this(emptyKeyword(), name, params, EMPTY_STRING, action);
     }
 
     /**
@@ -338,7 +339,7 @@ public interface TriConsumerStep<C1, C2, C3> extends
               final Map<String, ?> params,
               final String desc,
               final ThTriConsumer<? super C1, ? super C2, ? super C3, ?> action) {
-      this(Keyword.EMPTY, name, params, desc, action);
+      this(emptyKeyword(), name, params, desc, action);
     }
 
     /**
@@ -458,15 +459,15 @@ public interface TriConsumerStep<C1, C2, C3> extends
     }
 
     @Override
-    public final TriConsumerStep<C1, C2, C3> withArtifact(final String key,
+    public final TriConsumerStep<C1, C2, C3> withArtifact(final String name,
                                                           final Object value) {
-      return new TriConsumerStep.Of<>(this.stepExecutor, copyMapAndPutArgs(this.artifacts, key, value), this.action);
+      return new TriConsumerStep.Of<>(this.stepExecutor, copyMapAndPutArgs(this.artifacts, name, value), this.action);
     }
 
     @Override
-    public final Optional<Object> artifact(final String key) {
-      if (key == null) { throw new XtepsException("key arg is null"); }
-      return Optional.ofNullable(this.artifacts.getOrDefault(key, null));
+    public final Optional<Object> artifact(final String name) {
+      if (name == null) { throw new XtepsException("name arg is null"); }
+      return Optional.ofNullable(this.artifacts.getOrDefault(name, null));
     }
   }
 }

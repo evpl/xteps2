@@ -18,28 +18,57 @@ package com.plugatar.xteps2.core;
 import com.plugatar.xteps2.core.function.ThRunnable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.plugatar.xteps2.core.HookPriority.MAX_HOOK_PRIORITY;
 import static com.plugatar.xteps2.core.HookPriority.MIN_HOOK_PRIORITY;
 
+/**
+ * Hook container.
+ */
 public interface HookContainer {
 
+  /**
+   * Adds given hook to this container.
+   *
+   * @param priority the priority
+   * @param hook     the hook
+   * @throws XtepsException if {@code hook} is null
+   *                        or if {@code priority} is not in the range {@link HookPriority#MIN_HOOK_PRIORITY} to
+   *                        {@link HookPriority#MAX_HOOK_PRIORITY}
+   */
   void addHook(final int priority,
                final ThRunnable<?> hook);
 
+  /**
+   * Calls all hooks in this container.
+   */
   void callHooks();
 
+  /**
+   * Calls all hooks in this container. Exceptions will be added to the
+   * given exception as suppressed exceptions.
+   *
+   * @param baseException the base exception
+   * @throws XtepsException if {@code baseException} is null
+   */
   void callHooks(Throwable baseException);
 
-  class Of implements HookContainer {
-    private final Set<HookItem> hookItems;
+  /**
+   * Default {@code HookContainer} implementation.
+   */
+  class Default implements HookContainer {
+    private final Queue<HookItem> hookItems;
 
-    public Of() {
-      this.hookItems = new ConcurrentSkipListSet<>();
+    /**
+     * Ctor.
+     */
+    public Default() {
+      this.hookItems = new ConcurrentLinkedQueue<>();
     }
 
     @Override
@@ -56,7 +85,7 @@ public interface HookContainer {
     public final void callHooks() {
       if (!this.hookItems.isEmpty()) {
         final List<Throwable> exceptions = new ArrayList<>();
-        for (final HookItem hookItem : this.hookItems) {
+        for (final HookItem hookItem : sortedItems(this.hookItems)) {
           try {
             hookItem.hook.run();
           } catch (final Throwable ex) {
@@ -81,7 +110,7 @@ public interface HookContainer {
     public final void callHooks(final Throwable baseException) {
       if (baseException == null) { throw new XtepsException("baseException arg is null"); }
       if (!this.hookItems.isEmpty()) {
-        for (final HookItem hookItem : this.hookItems) {
+        for (final HookItem hookItem : sortedItems(this.hookItems)) {
           try {
             hookItem.hook.run();
           } catch (final Throwable ex) {
@@ -89,6 +118,17 @@ public interface HookContainer {
           }
         }
       }
+    }
+
+    private static HookItem[] sortedItems(final Queue<HookItem> hookItems) {
+      final int size = hookItems.size();
+      final HookItem[] array = new HookItem[size];
+      HookItem val = hookItems.poll();
+      for (int idx = 0; idx < size && val != null; ++idx, val = hookItems.poll()) {
+        array[idx] = val;
+      }
+      Arrays.sort(array);
+      return array;
     }
 
     @SuppressWarnings("unchecked")

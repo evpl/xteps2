@@ -15,6 +15,7 @@
  */
 package com.plugatar.xteps2;
 
+import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThBiConsumer;
 import com.plugatar.xteps2.core.function.ThBiFunction;
 import com.plugatar.xteps2.core.function.ThConsumer;
@@ -24,44 +25,119 @@ import com.plugatar.xteps2.core.function.ThSupplier;
 import com.plugatar.xteps2.core.function.ThTriConsumer;
 import com.plugatar.xteps2.core.function.ThTriFunction;
 
+/**
+ * Utility class. Contains methods for lambda functions converting.
+ */
 public final class Functions {
 
+  /**
+   * Utility class ctor.
+   */
   private Functions() {
   }
 
-  public static <T> ThRunnable<RuntimeException> runnable(final T context,
+  /**
+   * Returns {@code ThRunnable} that wraps given consumer.
+   *
+   * @param t        the input argument
+   * @param consumer the consumer
+   * @param <T>      the type of the input argument
+   * @return {@code ThRunnable} that wraps given consumer
+   */
+  public static <T> ThRunnable<RuntimeException> runnable(final T t,
                                                           final ThConsumer<? super T, ?> consumer) {
-    return ThRunnable.unchecked(() -> consumer.accept(context));
+    if (consumer == null) { throw new XtepsException("consumer arg is null"); }
+    return ThRunnable.unchecked(() -> consumer.accept(t));
   }
 
-  public static <T, U> ThRunnable<RuntimeException> runnable(final T context,
-                                                             final U context2,
+  /**
+   * Returns {@code ThRunnable} that wraps given consumer.
+   *
+   * @param t        the first input argument
+   * @param u        the second input argument
+   * @param consumer the consumer
+   * @param <T>      the type of the first input argument
+   * @param <U>      the type of the second input argument
+   * @return {@code ThRunnable} that wraps given consumer
+   */
+  public static <T, U> ThRunnable<RuntimeException> runnable(final T t,
+                                                             final U u,
                                                              final ThBiConsumer<? super T, ? super U, ?> consumer) {
-    return ThRunnable.unchecked(() -> consumer.accept(context, context2));
+    if (consumer == null) { throw new XtepsException("consumer arg is null"); }
+    return ThRunnable.unchecked(() -> consumer.accept(t, u));
   }
 
-  public static <T, U, V> ThRunnable<RuntimeException> runnable(final T context,
-                                                                final U context2,
-                                                                final V context3,
+  /**
+   * Returns {@code ThRunnable} that wraps given consumer.
+   *
+   * @param t        the first input argument
+   * @param u        the second input argument
+   * @param v        the third input argument
+   * @param consumer the consumer
+   * @param <T>      the type of the first input argument
+   * @param <U>      the type of the second input argument
+   * @param <V>      the type of the third input argument
+   * @return {@code ThRunnable} that wraps given consumer
+   */
+  public static <T, U, V> ThRunnable<RuntimeException> runnable(final T t,
+                                                                final U u,
+                                                                final V v,
                                                                 final ThTriConsumer<? super T, ? super U, ? super V, ?> consumer) {
-    return ThRunnable.unchecked(() -> consumer.accept(context, context2, context3));
+    if (consumer == null) { throw new XtepsException("consumer arg is null"); }
+    return ThRunnable.unchecked(() -> consumer.accept(t, u, v));
   }
 
-  public static <T, R> ThSupplier<R, RuntimeException> supplier(final T context,
+  /**
+   * Returns {@code ThSupplier} that wraps given function.
+   *
+   * @param t        the first input argument
+   * @param function the function
+   * @param <T>      the type of the input argument
+   * @param <R>      the type of the result
+   * @return {@code ThSupplier} that wraps given function
+   */
+  public static <T, R> ThSupplier<R, RuntimeException> supplier(final T t,
                                                                 final ThFunction<? super T, ? extends R, ?> function) {
-    return ThSupplier.unchecked(() -> function.apply(context));
+    if (function == null) { throw new XtepsException("function arg is null"); }
+    return ThSupplier.unchecked(() -> function.apply(t));
   }
 
-  public static <T, U, R> ThSupplier<R, RuntimeException> supplier(final T context,
-                                                                   final U context2,
+  /**
+   * Returns {@code ThSupplier} that wraps given function.
+   *
+   * @param t        the first input argument
+   * @param u        the second input argument
+   * @param function the function
+   * @param <T>      the type of the first input argument
+   * @param <U>      the type of the second input argument
+   * @param <R>      the type of the result
+   * @return {@code ThSupplier} that wraps given function
+   */
+  public static <T, U, R> ThSupplier<R, RuntimeException> supplier(final T t,
+                                                                   final U u,
                                                                    final ThBiFunction<? super T, ? super U, ? extends R, ?> function) {
-    return ThSupplier.unchecked(() -> function.apply(context, context2));
+    if (function == null) { throw new XtepsException("function arg is null"); }
+    return ThSupplier.unchecked(() -> function.apply(t, u));
   }
 
-  public static <T, U, V, R> ThSupplier<R, RuntimeException> supplier(final T context,
-                                                                      final U context2,
-                                                                      final V context3,
+  /**
+   * Returns {@code ThSupplier} that wraps given function.
+   *
+   * @param t        the first input argument
+   * @param u        the second input argument
+   * @param v        the third input argument
+   * @param function the function
+   * @param <T>      the type of the first input argument
+   * @param <U>      the type of the second input argument
+   * @param <V>      the type of the third input argument
+   * @param <R>      the type of the result
+   * @return {@code ThSupplier} that wraps given function
+   */
+  public static <T, U, V, R> ThSupplier<R, RuntimeException> supplier(final T t,
+                                                                      final U u,
+                                                                      final V v,
                                                                       final ThTriFunction<? super T, ? super U, ? super V, ? extends R, ?> function) {
-    return ThSupplier.unchecked(() -> function.apply(context, context2, context3));
+    if (function == null) { throw new XtepsException("function arg is null"); }
+    return ThSupplier.unchecked(() -> function.apply(t, u, v));
   }
 }

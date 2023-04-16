@@ -25,20 +25,21 @@ import org.testng.ITestResult;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.plugatar.xteps2.core.HookPriority.MAX_HOOK_PRIORITY;
 import static com.plugatar.xteps2.core.HookPriority.MIN_HOOK_PRIORITY;
 
 public class XtepsTestNG implements TestHookContainer, IInvokedMethodListener {
-  private static final Map<String, Set<HookItem>> HOOKS = new ConcurrentHashMap<>();
+  private static final Map<String, Queue<HookItem>> HOOKS = new ConcurrentHashMap<>();
   private static final ThreadLocal<String> CURRENT_TEST_ID = new ThreadLocal<>();
 
   public XtepsTestNG() {
@@ -55,7 +56,7 @@ public class XtepsTestNG implements TestHookContainer, IInvokedMethodListener {
     if (testId == null) {
       throw new XtepsException("Current test not found");
     }
-    HOOKS.computeIfAbsent(testId, t -> new ConcurrentSkipListSet<>()).add(new HookItem(priority, hook));
+    HOOKS.computeIfAbsent(testId, t -> new ConcurrentLinkedQueue<>()).add(new HookItem(priority, hook));
   }
 
   @Override
@@ -103,7 +104,7 @@ public class XtepsTestNG implements TestHookContainer, IInvokedMethodListener {
   private static void callHooks(final String testId,
                                 final Throwable testEx) {
     HOOKS.computeIfPresent(testId, (id, hookItems) -> {
-      for (final HookItem hookItem : hookItems) {
+      for (final HookItem hookItem : sortedItems(hookItems)) {
         try {
           hookItem.hook.run();
         } catch (final Throwable ex) {
@@ -118,7 +119,7 @@ public class XtepsTestNG implements TestHookContainer, IInvokedMethodListener {
     final AtomicReference<Throwable> resultRef = new AtomicReference<>();
     HOOKS.computeIfPresent(testId, (id, hookItems) -> {
       final List<Throwable> exceptions = new ArrayList<>();
-      for (final HookItem hookItem : hookItems) {
+      for (final HookItem hookItem : sortedItems(hookItems)) {
         try {
           hookItem.hook.run();
         } catch (final Throwable ex) {
@@ -140,6 +141,17 @@ public class XtepsTestNG implements TestHookContainer, IInvokedMethodListener {
       return null;
     });
     return resultRef.get();
+  }
+
+  private static HookItem[] sortedItems(final Queue<HookItem> hookItems) {
+    final int size = hookItems.size();
+    final HookItem[] array = new HookItem[size];
+    HookItem val = hookItems.poll();
+    for (int idx = 0; idx < size && val != null; ++idx, val = hookItems.poll()) {
+      array[idx] = val;
+    }
+    Arrays.sort(array);
+    return array;
   }
 
   private static final class HookItem implements Comparable<HookItem> {

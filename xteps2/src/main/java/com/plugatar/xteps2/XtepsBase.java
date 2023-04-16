@@ -16,10 +16,10 @@
 package com.plugatar.xteps2;
 
 import com.plugatar.xteps2.core.ExceptionHandler;
-import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepExecutor;
 import com.plugatar.xteps2.core.StepListener;
 import com.plugatar.xteps2.core.TestHookContainer;
+import com.plugatar.xteps2.core.TextFormatter;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThRunnable;
 
@@ -35,9 +35,69 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class. Xteps base.
+ * <p>
+ * Methods:
+ * <ul>
+ * <li>{@link #exceptionHandler()}</li>
+ * <li>{@link #stepExecutor()}</li>
+ * <li>{@link #testHookContainer()}</li>
+ * <li>{@link #textFormatter()}</li>
+ * </ul>
+ */
 public final class XtepsBase {
+
+  /**
+   * Utility class ctor.
+   */
+  private XtepsBase() {
+  }
+
+  /**
+   * Returns current {@code ExceptionHandler}.
+   *
+   * @return current {@code ExceptionHandler}
+   * @throws XtepsException if Xteps configuration is incorrect
+   */
+  public static ExceptionHandler exceptionHandler() {
+    return CONFIG.get().exceptionHandler;
+  }
+
+  /**
+   * Returns current {@code StepExecutor}.
+   *
+   * @return current {@code StepExecutor}
+   * @throws XtepsException if Xteps configuration is incorrect
+   */
+  public static StepExecutor stepExecutor() {
+    return CONFIG.get().stepExecutor;
+  }
+
+  /**
+   * Returns current {@code TestHookContainer}.
+   *
+   * @return current {@code TestHookContainer}
+   * @throws XtepsException if Xteps configuration is incorrect
+   */
+  public static TestHookContainer testHookContainer() {
+    return CONFIG.get().testHookContainer;
+  }
+
+  /**
+   * Returns current {@code TextFormatter}.
+   *
+   * @return current {@code TextFormatter}
+   * @throws XtepsException if Xteps configuration is incorrect
+   */
+  public static TextFormatter textFormatter() {
+    return CONFIG.get().textFormatter;
+  }
+
   static final Supplier<Config> CONFIG = new Supplier<Config>() {
     private volatile Config instance = null;
 
@@ -57,30 +117,13 @@ public final class XtepsBase {
     }
   };
 
-  private XtepsBase() {
-  }
-
-  public static ExceptionHandler exceptionHandler() {
-    return CONFIG.get().exceptionHandler;
-  }
-
-  public static StepExecutor stepExecutor() {
-    return CONFIG.get().stepExecutor;
-  }
-
-  public static TestHookContainer testHookContainer() {
-    return CONFIG.get().testHookContainer;
-  }
-
-  static Config configByProperties() {
+  private static Config configByProperties() {
     final Properties properties = systemPropertiesWithFile("xteps.properties");
     final List<StepListener> listeners = new ArrayList<>();
     if (booleanProperty(properties, "xteps.listeners.autodetection", true)) {
       listeners.addAll(listenersBySPI());
     }
-    listeners.addAll(listenersByClassNames(stringListProperty(
-      properties, "xteps.listeners.list", ",", Collections.emptyList()
-    )));
+    listeners.addAll(listenersByClassNames(stringListProperty(properties, "xteps.listeners.list", ",", Collections.emptyList())));
     Optional<TestHookContainer> optionalTestHookContainer = testHooksContainerByProperty(properties, "xteps.testHooks.impl");
     if (!optionalTestHookContainer.isPresent() && booleanProperty(properties, "xteps.testHooks.autodetection", true)) {
       optionalTestHookContainer = testHooksContainerBySPI();
@@ -92,18 +135,17 @@ public final class XtepsBase {
         throw new XtepsException("TestHookContainer implementation not found");
       }
     });
-    final ExceptionHandler exceptionHandler = new ExceptionHandler.RemovingXtepsLinesStackTraceExceptionHandler();
+    final ExceptionHandler exceptionHandler = new ExceptionHandler.CleanStackTraceExceptionHandler();
     return new Config(
+      properties,
       exceptionHandler,
-      new StepExecutor.Of(exceptionHandler, uniqueByClass(listeners).toArray(new StepListener[0])),
-      testHooksContainer,
-      new Keyword.Of(stringProperty(properties, "xteps.keywords.background", "Background")),
-      new Keyword.Of(stringProperty(properties, "xteps.keywords.scenario", "Scenario")),
-      new Keyword.Of(stringProperty(properties, "xteps.keywords.given", "Given")),
-      new Keyword.Of(stringProperty(properties, "xteps.keywords.when", "When")),
-      new Keyword.Of(stringProperty(properties, "xteps.keywords.then", "Then")),
-      new Keyword.Of(stringProperty(properties, "xteps.keywords.and", "And")),
-      new Keyword.Of(stringProperty(properties, "xteps.keywords.but", "But"))
+      new StepExecutor.Default(exceptionHandler, uniqueByClass(listeners).toArray(new StepListener[0])),
+      new TextFormatter.Default(
+        patternContainsCapturingGroupsProperty(properties, "xteps.formatter.pattern", Pattern.compile("\\{([^}]*)}")),
+        booleanProperty(properties, "xteps.formatter.fieldForceAccess", false),
+        booleanProperty(properties, "xteps.formatter.methodForceAccess", false)
+      ),
+      testHooksContainer
     );
   }
 
@@ -125,9 +167,9 @@ public final class XtepsBase {
     return properties;
   }
 
-  private static String stringProperty(final Properties properties,
-                                       final String propertyName,
-                                       final String defaultValue) {
+  static String stringProperty(final Properties properties,
+                               final String propertyName,
+                               final String defaultValue) {
     final String propertyValue = properties.getProperty(propertyName);
     if (propertyValue == null) {
       return defaultValue;
@@ -150,13 +192,37 @@ public final class XtepsBase {
     if (trimmedPropertyValue.isEmpty()) {
       return defaultValue;
     }
-    if (trimmedPropertyValue.equalsIgnoreCase("false")) {
-      return false;
-    }
     if (trimmedPropertyValue.equalsIgnoreCase("true")) {
       return true;
     }
-    throw throwXtepsPropertyException(propertyName, propertyValue);
+    if (trimmedPropertyValue.equalsIgnoreCase("false")) {
+      return false;
+    }
+    throw new XtepsException("Illegal boolean property value, property: " + propertyName + ", value: " + propertyValue);
+  }
+
+  private static Pattern patternContainsCapturingGroupsProperty(final Properties properties,
+                                                                final String propertyName,
+                                                                final Pattern defaultValue) {
+    final String propertyValue = properties.getProperty(propertyName);
+    if (propertyValue == null) {
+      return defaultValue;
+    }
+    final String trimmedPropertyValue = propertyValue.trim();
+    if (trimmedPropertyValue.isEmpty()) {
+      return defaultValue;
+    }
+    final Pattern pattern;
+    try {
+      pattern = Pattern.compile(propertyValue);
+    } catch (final PatternSyntaxException ex) {
+      throw new XtepsException("Illegal pattern property value, property: " + propertyName + ", value: " + propertyValue, ex);
+    }
+    if (pattern.matcher("").groupCount() < 1) {
+      throw new XtepsException("Illegal pattern property value, pattern must contain at least one group, property: " +
+        propertyName + ", value: " + propertyValue);
+    }
+    return defaultValue;
   }
 
   private static List<String> stringListProperty(final Properties properties,
@@ -239,43 +305,23 @@ public final class XtepsBase {
       .collect(Collectors.toList());
   }
 
-  private static XtepsException throwXtepsPropertyException(final String propertyName,
-                                                            final String propertyValue) {
-    throw new XtepsException("Incorrect value " + propertyValue + " for " + propertyName + "property");
-  }
-
   static final class Config {
+    final Properties properties;
     final ExceptionHandler exceptionHandler;
     final StepExecutor stepExecutor;
+    final TextFormatter textFormatter;
     final TestHookContainer testHookContainer;
-    final Keyword backgroundKeyword;
-    final Keyword scenarioKeyword;
-    final Keyword givenKeyword;
-    final Keyword whenKeyword;
-    final Keyword thenKeyword;
-    final Keyword andKeyword;
-    final Keyword butKeyword;
 
-    private Config(final ExceptionHandler exceptionHandler,
+    private Config(final Properties properties,
+                   final ExceptionHandler exceptionHandler,
                    final StepExecutor stepExecutor,
-                   final TestHookContainer testHookContainer,
-                   final Keyword backgroundKeyword,
-                   final Keyword scenarioKeyword,
-                   final Keyword givenKeyword,
-                   final Keyword whenKeyword,
-                   final Keyword thenKeyword,
-                   final Keyword andKeyword,
-                   final Keyword butKeyword) {
+                   final TextFormatter textFormatter,
+                   final TestHookContainer testHookContainer) {
+      this.properties = properties;
       this.exceptionHandler = exceptionHandler;
       this.stepExecutor = stepExecutor;
+      this.textFormatter = textFormatter;
       this.testHookContainer = testHookContainer;
-      this.backgroundKeyword = backgroundKeyword;
-      this.scenarioKeyword = scenarioKeyword;
-      this.givenKeyword = givenKeyword;
-      this.whenKeyword = whenKeyword;
-      this.thenKeyword = thenKeyword;
-      this.andKeyword = andKeyword;
-      this.butKeyword = butKeyword;
     }
   }
 }

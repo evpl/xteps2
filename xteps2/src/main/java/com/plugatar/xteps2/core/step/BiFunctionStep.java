@@ -29,6 +29,7 @@ import static com.plugatar.xteps2.core.step.StepObjectUtils.EMPTY_STRING;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.artifactMapArgs;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.copyMapAndPutArgs;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.currentStepExecutor;
+import static com.plugatar.xteps2.core.step.StepObjectUtils.emptyKeyword;
 
 /**
  * BiFunction step object.
@@ -55,7 +56,7 @@ public interface BiFunctionStep<C1, C2, R> extends
   R apply(C1 c1, C2 c2);
 
   @Override
-  BiFunctionStep<C1, C2, R> withArtifact(String key,
+  BiFunctionStep<C1, C2, R> withArtifact(String name,
                                          Object value);
 
   /**
@@ -87,7 +88,7 @@ public interface BiFunctionStep<C1, C2, R> extends
      *                        or if {@code action} arg is null
      */
     public Of(final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
-      this(Keyword.EMPTY, EMPTY_STRING, Collections.emptyMap(), EMPTY_STRING, action);
+      this(emptyKeyword(), EMPTY_STRING, Collections.emptyMap(), EMPTY_STRING, action);
     }
 
     /**
@@ -137,7 +138,7 @@ public interface BiFunctionStep<C1, C2, R> extends
      */
     public Of(final String name,
               final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
-      this(Keyword.EMPTY, name, Collections.emptyMap(), EMPTY_STRING, action);
+      this(emptyKeyword(), name, Collections.emptyMap(), EMPTY_STRING, action);
     }
 
     /**
@@ -199,7 +200,7 @@ public interface BiFunctionStep<C1, C2, R> extends
     public Of(final String name,
               final String desc,
               final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
-      this(Keyword.EMPTY, name, Collections.emptyMap(), desc, action);
+      this(emptyKeyword(), name, Collections.emptyMap(), desc, action);
     }
 
     /**
@@ -267,7 +268,7 @@ public interface BiFunctionStep<C1, C2, R> extends
     public Of(final String name,
               final Map<String, ?> params,
               final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
-      this(Keyword.EMPTY, name, params, EMPTY_STRING, action);
+      this(emptyKeyword(), name, params, EMPTY_STRING, action);
     }
 
     /**
@@ -341,7 +342,7 @@ public interface BiFunctionStep<C1, C2, R> extends
               final Map<String, ?> params,
               final String desc,
               final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
-      this(Keyword.EMPTY, name, params, desc, action);
+      this(emptyKeyword(), name, params, desc, action);
     }
 
     /**
@@ -477,15 +478,15 @@ public interface BiFunctionStep<C1, C2, R> extends
     }
 
     @Override
-    public final BiFunctionStep<C1, C2, R> withArtifact(final String key,
+    public final BiFunctionStep<C1, C2, R> withArtifact(final String name,
                                                         final Object value) {
-      return new BiFunctionStep.Of<>(this.stepExecutor, copyMapAndPutArgs(this.artifacts, key, value), this.action);
+      return new BiFunctionStep.Of<>(this.stepExecutor, copyMapAndPutArgs(this.artifacts, name, value), this.action);
     }
 
     @Override
-    public final Optional<Object> artifact(final String key) {
-      if (key == null) { throw new XtepsException("key arg is null"); }
-      return Optional.ofNullable(this.artifacts.getOrDefault(key, null));
+    public final Optional<Object> artifact(final String name) {
+      if (name == null) { throw new XtepsException("name arg is null"); }
+      return Optional.ofNullable(this.artifacts.getOrDefault(name, null));
     }
   }
 }

@@ -24,76 +24,197 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Step artifacts.
+ * <p>
+ * Fields:
+ * <ul>
+ * <li>{@link #KEYWORD_ARTIFACT}</li>
+ * <li>{@link #NAME_ARTIFACT}</li>
+ * <li>{@link #PARAMS_ARTIFACT}</li>
+ * <li>{@link #DESC_ARTIFACT}</li>
+ * <li>{@link #REPLACEMENTS_ARTIFACT}</li>
+ * </ul>
+ * Methods:
+ * <ul>
+ * <li>{@link #keywordArtifact()}</li>
+ * <li>{@link #nameArtifact()}</li>
+ * <li>{@link #paramsArtifact()}</li>
+ * <li>{@link #descArtifact()}</li>
+ * <li>{@link #withArtifact(String, Object, StepObject)}</li>
+ * <li>{@link #withKeyword(Keyword, StepObject)}</li>
+ * <li>{@link #withName(String, StepObject)}</li>
+ * <li>{@link #withParam(String, Object, StepObject)}</li>
+ * <li>{@link #withDesc(String, StepObject)}</li>
+ * </ul>
+ */
 public final class Artifacts {
-  private static final String KEYWORD_ARTIFACT_NAME = "keyword";
-  private static final String NAME_ARTIFACT_NAME = "name";
-  private static final String DESC_ARTIFACT_NAME = "desc";
-  private static final String PARAMS_ARTIFACT_NAME = "params";
+  /**
+   * The <em>keyword</em> artifact name.
+   */
+  public static final String KEYWORD_ARTIFACT = "keyword";
+  /**
+   * The <em>name</em> artifact name.
+   */
+  public static final String NAME_ARTIFACT = "name";
+  /**
+   * The <em>params</em> artifact name.
+   */
+  public static final String PARAMS_ARTIFACT = "params";
+  /**
+   * The <em>desc</em> artifact name.
+   */
+  public static final String DESC_ARTIFACT = "desc";
+  /**
+   * The <em>replacements</em> artifact name.
+   */
+  public static final String REPLACEMENTS_ARTIFACT = "replacements";
 
+  /**
+   * Utility class ctor.
+   */
   private Artifacts() {
   }
 
+  /**
+   * Return <em>keyword</em> artifact name.
+   *
+   * @return <em>keyword</em> artifact name
+   */
   public static String keywordArtifact() {
-    return KEYWORD_ARTIFACT_NAME;
+    return KEYWORD_ARTIFACT;
   }
 
+  /**
+   * Return <em>name</em> artifact name.
+   *
+   * @return <em>name</em> artifact name
+   */
   public static String nameArtifact() {
-    return NAME_ARTIFACT_NAME;
+    return NAME_ARTIFACT;
   }
 
+  /**
+   * Return <em>desc</em> artifact name.
+   *
+   * @return <em>desc</em> artifact name
+   */
   public static String descArtifact() {
-    return DESC_ARTIFACT_NAME;
+    return DESC_ARTIFACT;
   }
 
+  /**
+   * Return <em>params</em> artifact name.
+   *
+   * @return <em>params</em> artifact name
+   */
   public static String paramsArtifact() {
-    return PARAMS_ARTIFACT_NAME;
+    return PARAMS_ARTIFACT;
   }
 
+  /**
+   * Return <em>replacements</em> artifact name.
+   *
+   * @return <em>replacements</em> artifact name
+   */
+  public static String replacementsArtifact() {
+    return REPLACEMENTS_ARTIFACT;
+  }
+
+  /**
+   * Returns step object with given artifact.
+   *
+   * @param artifactName  the artifact name
+   * @param artifactValue the artifact value
+   * @param step          the origin step object
+   * @param <S>           the type of the step object
+   * @return step object with given artifact
+   * @throws XtepsException if {@code artifactName} arg is null
+   *                        or if {@code step} arg is null
+   */
   @SuppressWarnings("unchecked")
-  public static <T extends StepObject> T withKeyword(final Keyword keyword,
-                                                     final T step) {
+  public static <S extends StepObject> S withArtifact(final String artifactName,
+                                                      final Object artifactValue,
+                                                      final S step) {
+    if (artifactName == null) { throw new XtepsException("artifactName arg is null"); }
+    if (step == null) { throw new XtepsException("step arg is null"); }
+    return (S) step.withArtifact(artifactName, artifactValue);
+  }
+
+  /**
+   * Returns step object with given keyword.
+   *
+   * @param keyword the keyword
+   * @param step    the origin step object
+   * @param <S>     the type of the step object
+   * @return step object with given keyword
+   * @throws XtepsException if {@code keyword} arg is null
+   *                        or if {@code step} arg is null
+   */
+  @SuppressWarnings("unchecked")
+  public static <S extends StepObject> S withKeyword(final Keyword keyword,
+                                                     final S step) {
     if (keyword == null) { throw new XtepsException("keyword arg is null"); }
     if (step == null) { throw new XtepsException("step arg is null"); }
-    return (T) step.withArtifact(KEYWORD_ARTIFACT_NAME, keyword);
+    return (S) step.withArtifact(KEYWORD_ARTIFACT, keyword);
   }
 
+  /**
+   * Returns step object with given name.
+   *
+   * @param name the name
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with given name
+   * @throws XtepsException if {@code name} arg is null
+   *                        or if {@code step} arg is null
+   */
   @SuppressWarnings("unchecked")
-  public static <T extends StepObject> T withName(final String name,
-                                                  final T step) {
+  public static <S extends StepObject> S withName(final String name,
+                                                  final S step) {
     if (name == null) { throw new XtepsException("name arg is null"); }
     if (step == null) { throw new XtepsException("step arg is null"); }
-    return (T) step.withArtifact(NAME_ARTIFACT_NAME, name);
+    return (S) step.withArtifact(NAME_ARTIFACT, name);
   }
 
+  /**
+   * Returns step object with given desc.
+   *
+   * @param desc the desc
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with given desc
+   * @throws XtepsException if {@code desc} arg is null
+   *                        or if {@code step} arg is null
+   */
   @SuppressWarnings("unchecked")
-  public static <T extends StepObject> T withDesc(final String desc,
-                                                  final T step) {
+  public static <S extends StepObject> S withDesc(final String desc,
+                                                  final S step) {
     if (desc == null) { throw new XtepsException("desc arg is null"); }
     if (step == null) { throw new XtepsException("step arg is null"); }
-    return (T) step.withArtifact(DESC_ARTIFACT_NAME, desc);
+    return (S) step.withArtifact(DESC_ARTIFACT, desc);
   }
 
+  /**
+   * Returns step object with given parameter.
+   *
+   * @param paramName  the parameter name
+   * @param paramValue the parameter value
+   * @param step       the origin step object
+   * @param <S>        the type of the step object
+   * @return step object with given param
+   * @throws XtepsException if {@code paramName} arg is null
+   *                        or if {@code step} arg is null
+   */
   @SuppressWarnings("unchecked")
-  public static <T extends StepObject> T withParam(final String key,
-                                                   final Object value,
-                                                   final T step) {
-    if (key == null) { throw new XtepsException("key arg is null"); }
-    if (value == null) { throw new XtepsException("value arg is null"); }
+  public static <S extends StepObject> S withParam(final String paramName,
+                                                   final Object paramValue,
+                                                   final S step) {
+    if (paramName == null) { throw new XtepsException("paramName arg is null"); }
     if (step == null) { throw new XtepsException("step arg is null"); }
-    final Optional<Map<String, ?>> optParams = (Optional<Map<String, ?>>) (Optional<?>) step.artifact(PARAMS_ARTIFACT_NAME);
+    final Optional<Map<String, ?>> optParams = (Optional<Map<String, ?>>) (Optional<?>) step.artifact(PARAMS_ARTIFACT);
     final Map<String, Object> newParams = new LinkedHashMap<>(optParams.orElse(Collections.emptyMap()));
-    newParams.put(key, value);
-    return (T) step.withArtifact(PARAMS_ARTIFACT_NAME, newParams);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T extends StepObject> T withParams(final Map<String, ?> params,
-                                                    final T step) {
-    if (params == null) { throw new XtepsException("params arg is null"); }
-    if (step == null) { throw new XtepsException("step arg is null"); }
-    final Optional<Map<String, ?>> optParams = (Optional<Map<String, ?>>) (Optional<?>) step.artifact(PARAMS_ARTIFACT_NAME);
-    final Map<String, Object> newParams = new LinkedHashMap<>(optParams.orElse(Collections.emptyMap()));
-    newParams.putAll(params);
-    return (T) step.withArtifact(PARAMS_ARTIFACT_NAME, newParams);
+    newParams.put(paramName, paramValue);
+    return (S) step.withArtifact(PARAMS_ARTIFACT, newParams);
   }
 }

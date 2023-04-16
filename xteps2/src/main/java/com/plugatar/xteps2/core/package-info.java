@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Xteps2 core.
+ * Core.
  */
 package com.plugatar.xteps2.core;

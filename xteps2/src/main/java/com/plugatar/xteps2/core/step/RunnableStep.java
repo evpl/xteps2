@@ -29,6 +29,7 @@ import static com.plugatar.xteps2.core.step.StepObjectUtils.EMPTY_STRING;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.artifactMapArgs;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.copyMapAndPutArgs;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.currentStepExecutor;
+import static com.plugatar.xteps2.core.step.StepObjectUtils.emptyKeyword;
 
 /**
  * Runnable step object.
@@ -47,7 +48,7 @@ public interface RunnableStep extends
   void run();
 
   @Override
-  RunnableStep withArtifact(String key,
+  RunnableStep withArtifact(String name,
                             Object value);
 
   /**
@@ -75,7 +76,7 @@ public interface RunnableStep extends
      *                        or if {@code action} arg is null
      */
     public Of(final ThRunnable<?> action) {
-      this(Keyword.EMPTY, EMPTY_STRING, Collections.emptyMap(), EMPTY_STRING, action);
+      this(emptyKeyword(), EMPTY_STRING, Collections.emptyMap(), EMPTY_STRING, action);
     }
 
     /**
@@ -125,7 +126,7 @@ public interface RunnableStep extends
      */
     public Of(final String name,
               final ThRunnable<?> action) {
-      this(Keyword.EMPTY, name, Collections.emptyMap(), EMPTY_STRING, action);
+      this(emptyKeyword(), name, Collections.emptyMap(), EMPTY_STRING, action);
     }
 
     /**
@@ -187,7 +188,7 @@ public interface RunnableStep extends
     public Of(final String name,
               final String desc,
               final ThRunnable<?> action) {
-      this(Keyword.EMPTY, name, Collections.emptyMap(), desc, action);
+      this(emptyKeyword(), name, Collections.emptyMap(), desc, action);
     }
 
     /**
@@ -255,7 +256,7 @@ public interface RunnableStep extends
     public Of(final String name,
               final Map<String, ?> params,
               final ThRunnable<?> action) {
-      this(Keyword.EMPTY, name, params, EMPTY_STRING, action);
+      this(emptyKeyword(), name, params, EMPTY_STRING, action);
     }
 
     /**
@@ -329,7 +330,7 @@ public interface RunnableStep extends
               final Map<String, ?> params,
               final String desc,
               final ThRunnable<?> action) {
-      this(Keyword.EMPTY, name, params, desc, action);
+      this(emptyKeyword(), name, params, desc, action);
     }
 
     /**
@@ -465,15 +466,15 @@ public interface RunnableStep extends
     }
 
     @Override
-    public final RunnableStep withArtifact(final String key,
+    public final RunnableStep withArtifact(final String name,
                                            final Object value) {
-      return new RunnableStep.Of(this.stepExecutor, copyMapAndPutArgs(this.artifacts, key, value), this.action);
+      return new RunnableStep.Of(this.stepExecutor, copyMapAndPutArgs(this.artifacts, name, value), this.action);
     }
 
     @Override
-    public final Optional<Object> artifact(final String key) {
-      if (key == null) { throw new XtepsException("key arg is null"); }
-      return Optional.ofNullable(this.artifacts.getOrDefault(key, null));
+    public final Optional<Object> artifact(final String name) {
+      if (name == null) { throw new XtepsException("name arg is null"); }
+      return Optional.ofNullable(this.artifacts.getOrDefault(name, null));
     }
   }
 }

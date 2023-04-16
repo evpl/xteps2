@@ -22,20 +22,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Step executor.
+ */
 public interface StepExecutor {
 
+  /**
+   * Executes {@code action}. Calls hooks in case of any exception.
+   *
+   * @param hooks  hooks
+   * @param action the action
+   * @param <R>    the type of the result
+   * @return action result
+   * @throws XtepsException if {@code hooks} arg is null
+   *                        or if {@code action} arg is null
+   */
   <R> R exec(HookContainer hooks,
              ThSupplier<? extends R, ?> action);
 
+  /**
+   * Executes and report {@code action}.
+   *
+   * @param artifacts the artifacts
+   * @param action    the action
+   * @param <R>       the type of the result
+   * @return action result
+   * @throws XtepsException if {@code artifacts} arg is null
+   *                        or if {@code action} arg is null
+   */
   <R> R report(Map<String, ?> artifacts,
                ThSupplier<? extends R, ?> action);
 
-  class Of implements StepExecutor {
+  /**
+   * Default {@code StepExecutor} implementation.
+   */
+  class Default implements StepExecutor {
     private final ExceptionHandler exceptionHandler;
     private final StepListener[] listeners;
 
-    public Of(final ExceptionHandler exceptionHandler,
-              final StepListener[] listeners) {
+    /**
+     * Ctor.
+     *
+     * @param exceptionHandler the exception handler
+     * @param listeners        the listeners list
+     * @throws XtepsException if {@code exceptionHandler} arg is null
+     *                        or if {@code listeners} arg is null
+     */
+    public Default(final ExceptionHandler exceptionHandler,
+                   final StepListener[] listeners) {
       if (exceptionHandler == null) { throw new XtepsException("exceptionHandler arg is null"); }
       if (listeners == null) { throw new XtepsException("listeners arg is null"); }
       this.exceptionHandler = exceptionHandler;
@@ -49,10 +83,10 @@ public interface StepExecutor {
       if (action == null) { throw new XtepsException("action arg is null"); }
       try {
         return action.get();
-      } catch (final Throwable stepException) {
-        hooks.callHooks(stepException);
-        this.exceptionHandler.handle(stepException);
-        throw sneakyThrow(stepException);
+      } catch (final Throwable actionException) {
+        hooks.callHooks(actionException);
+        this.exceptionHandler.handle(actionException);
+        throw sneakyThrow(actionException);
       }
     }
 
@@ -79,12 +113,21 @@ public interface StepExecutor {
       } catch (final Throwable ex) {
         stepException = ex;
       }
-      /* Step finish */
-      for (final StepListener listener : this.listeners) {
-        try {
-          listener.stepPassed(uuid);
-        } catch (final Throwable ex) {
-          listenerExceptions.add(ex);
+      if (stepException == null) { /* Step finish */
+        for (final StepListener listener : this.listeners) {
+          try {
+            listener.stepPassed(uuid);
+          } catch (final Throwable ex) {
+            listenerExceptions.add(ex);
+          }
+        }
+      } else { /* Step fail */
+        for (final StepListener listener : this.listeners) {
+          try {
+            listener.stepFailed(uuid, stepException);
+          } catch (final Throwable ex) {
+            listenerExceptions.add(ex);
+          }
         }
       }
       /* Exceptions processing */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Evgenii Plugatar
+ * Copyright 2023 Evgenii Plugatar
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,20 +26,21 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.plugatar.xteps2.core.HookPriority.MAX_HOOK_PRIORITY;
 import static com.plugatar.xteps2.core.HookPriority.MIN_HOOK_PRIORITY;
 
 public class XtepsJUnit5 implements TestHookContainer, InvocationInterceptor {
-  private static final Map<String, Set<HookItem>> HOOKS = new ConcurrentHashMap<>();
+  private static final Map<String, Queue<HookItem>> HOOKS = new ConcurrentHashMap<>();
   private static final ThreadLocal<String> CURRENT_TEST_ID = new ThreadLocal<>();
 
   public XtepsJUnit5() {
@@ -54,9 +55,9 @@ public class XtepsJUnit5 implements TestHookContainer, InvocationInterceptor {
     }
     final String testId = CURRENT_TEST_ID.get();
     if (testId == null) {
-      throw new XtepsException("No running test");
+      throw new XtepsException("Current test not found");
     }
-    HOOKS.computeIfAbsent(testId, t -> new ConcurrentSkipListSet<>()).add(new HookItem(priority, hook));
+    HOOKS.computeIfAbsent(testId, t -> new ConcurrentLinkedQueue<>()).add(new HookItem(priority, hook));
   }
 
   @Override
@@ -80,29 +81,25 @@ public class XtepsJUnit5 implements TestHookContainer, InvocationInterceptor {
     invoke(invocation);
   }
 
-  private static <T> T invoke(final Invocation<T> invocation) throws Throwable {
+  private static void invoke(final Invocation<Void> invocation) throws Throwable {
     final String testId = UUID.randomUUID().toString();
-    CURRENT_TEST_ID.set(testId);
-    T returnedValue = null;
     Throwable testEx = null;
+    CURRENT_TEST_ID.set(testId);
     try {
-      returnedValue = invocation.proceed();
+      invocation.proceed();
     } catch (final Throwable ex) {
       testEx = ex;
     }
     CURRENT_TEST_ID.remove();
-    if (testEx == null) {
-      final Throwable hookEx = callHooks(testId);
-      if (hookEx == null) {
-        return returnedValue;
-      } else {
-        handleException(hookEx);
-        throw hookEx;
-      }
-    } else {
+    if (testEx != null) {
       callHooks(testId, testEx);
       handleException(testEx);
       throw testEx;
+    }
+    final Throwable hookEx = callHooks(testId);
+    if (hookEx != null) {
+      handleException(hookEx);
+      throw hookEx;
     }
   }
 
@@ -113,7 +110,7 @@ public class XtepsJUnit5 implements TestHookContainer, InvocationInterceptor {
   private static void callHooks(final String testId,
                                 final Throwable testEx) {
     HOOKS.computeIfPresent(testId, (id, hookItems) -> {
-      for (final HookItem hookItem : hookItems) {
+      for (final HookItem hookItem : sortedItems(hookItems)) {
         try {
           hookItem.hook.run();
         } catch (final Throwable ex) {
@@ -128,7 +125,7 @@ public class XtepsJUnit5 implements TestHookContainer, InvocationInterceptor {
     final AtomicReference<Throwable> resultRef = new AtomicReference<>();
     HOOKS.computeIfPresent(testId, (id, hookItems) -> {
       final List<Throwable> exceptions = new ArrayList<>();
-      for (final HookItem hookItem : hookItems) {
+      for (final HookItem hookItem : sortedItems(hookItems)) {
         try {
           hookItem.hook.run();
         } catch (final Throwable ex) {
@@ -150,6 +147,17 @@ public class XtepsJUnit5 implements TestHookContainer, InvocationInterceptor {
       return null;
     });
     return resultRef.get();
+  }
+
+  private static HookItem[] sortedItems(final Queue<HookItem> hookItems) {
+    final int size = hookItems.size();
+    final HookItem[] array = new HookItem[size];
+    HookItem val = hookItems.poll();
+    for (int idx = 0; idx < size && val != null; ++idx, val = hookItems.poll()) {
+      array[idx] = val;
+    }
+    Arrays.sort(array);
+    return array;
   }
 
   private static final class HookItem implements Comparable<HookItem> {

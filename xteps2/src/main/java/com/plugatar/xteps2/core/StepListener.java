@@ -16,8 +16,8 @@
 package com.plugatar.xteps2.core;
 
 import com.plugatar.xteps2.Artifacts;
+import com.plugatar.xteps2.Keywords;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -51,65 +51,104 @@ public interface StepListener {
   void stepFailed(String uuid,
                   Throwable exception);
 
+  /**
+   * Step listener utils.
+   */
   class Utils {
 
+    /**
+     * Utility class ctor.
+     */
     private Utils() {
     }
 
+    /**
+     * Returns <em>keyword</em> artifact from given map.
+     *
+     * @param artifacts the artifacts map
+     * @return <em>keyword</em> artifact
+     * @throws XtepsException if {@code artifacts} arg is null
+     */
     public static Keyword keyword(final Map<String, ?> artifacts) {
+      if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.keywordArtifact());
-      return value instanceof Keyword ? (Keyword) value : Keyword.EMPTY;
+      return value instanceof Keyword ? (Keyword) value : Keywords.NONE;
     }
 
+    /**
+     * Returns <em>name</em> artifact from given map.
+     *
+     * @param artifacts the artifacts map
+     * @return <em>keyword</em> artifact
+     * @throws XtepsException if {@code artifacts} arg is null
+     */
     public static String name(final Map<String, ?> artifacts) {
+      if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.nameArtifact());
       return value instanceof String ? (String) value : "";
     }
 
+    /**
+     * Returns <em>desc</em> artifact from given map.
+     *
+     * @param artifacts the artifacts map
+     * @return <em>desc</em> artifact
+     * @throws XtepsException if {@code artifacts} arg is null
+     */
     public static String desc(final Map<String, ?> artifacts) {
+      if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.descArtifact());
       return value instanceof String ? (String) value : "";
     }
 
+    /**
+     * Returns <em>params</em> artifact from given map.
+     *
+     * @param artifacts the artifacts map
+     * @return <em>params</em> artifact
+     * @throws XtepsException if {@code artifacts} arg is null
+     */
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> params(final Map<String, ?> artifacts) {
+      if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.paramsArtifact());
       return value instanceof Map ? (Map<String, Object>) value : Collections.emptyMap();
     }
 
+    /**
+     * Returns <em>replacements</em> artifact from given map.
+     *
+     * @param artifacts the artifacts map
+     * @return <em>replacements</em> artifact
+     * @throws XtepsException if {@code artifacts} arg is null
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> replacements(final Map<String, ?> artifacts) {
+      if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
+      final Object value = artifacts.get(Artifacts.replacementsArtifact());
+      return value instanceof Map ? (Map<String, Object>) value : Collections.emptyMap();
+    }
+
+    /**
+     * Returns a string consisting of given keyword and given name.
+     *
+     * @param name                 the name
+     * @param keyword              the keyword
+     * @param emptyNameReplacement the empty name replacement
+     * @return string consisting of given keyword and given name
+     * @throws XtepsException if {@code name} arg is null
+     *                        or if {@code keyword} arg is null
+     *                        or if {@code emptyNameReplacement} arg is null
+     */
     public static String nameWithKeyword(final String name,
                                          final Keyword keyword,
                                          final String emptyNameReplacement) {
+      if (name == null) { throw new XtepsException("artifacts arg is null"); }
+      if (keyword == null) { throw new XtepsException("artifacts arg is null"); }
+      if (emptyNameReplacement == null) { throw new XtepsException("artifacts arg is null"); }
       final String keywordValue = keyword.toString();
       final String nameValue = name.isEmpty() ? emptyNameReplacement : name;
       return keywordValue.isEmpty() ? nameValue : keywordValue + " " + nameValue;
-    }
-
-    public static String asString(final Object obj) {
-      if (obj == null) {
-        return "null";
-      }
-      if (obj.getClass().isArray()) {
-        if (obj instanceof Object[]) {
-          return Arrays.toString((Object[]) obj);
-        } else if (obj instanceof long[]) {
-          return Arrays.toString((long[]) obj);
-        } else if (obj instanceof short[]) {
-          return Arrays.toString((short[]) obj);
-        } else if (obj instanceof int[]) {
-          return Arrays.toString((int[]) obj);
-        } else if (obj instanceof char[]) {
-          return Arrays.toString((char[]) obj);
-        } else if (obj instanceof double[]) {
-          return Arrays.toString((double[]) obj);
-        } else if (obj instanceof float[]) {
-          return Arrays.toString((float[]) obj);
-        } else if (obj instanceof boolean[]) {
-          return Arrays.toString((boolean[]) obj);
-        } else if (obj instanceof byte[]) {
-          return Arrays.toString((byte[]) obj);
-        }
-      }
-      return obj.toString();
     }
   }
 }

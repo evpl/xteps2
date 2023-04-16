@@ -16,66 +16,233 @@
 package com.plugatar.xteps2;
 
 import com.plugatar.xteps2.core.Keyword;
+import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.step.StepObject;
 
-public final class Keywords {
+import static com.plugatar.xteps2.XtepsBase.CONFIG;
+import static com.plugatar.xteps2.XtepsBase.stringProperty;
 
-  private Keywords() {
+/**
+ * Default keywords.
+ * <p>
+ * Fields:
+ * <ul>
+ * <li>{@link #NONE}</li>
+ * <li>{@link #BACKGROUND}</li>
+ * <li>{@link #SCENARIO}</li>
+ * <li>{@link #GIVEN}</li>
+ * <li>{@link #WHEN}</li>
+ * <li>{@link #THEN}</li>
+ * <li>{@link #AND}</li>
+ * <li>{@link #BUT}</li>
+ * </ul>
+ * Methods:
+ * <ul>
+ * <li>{@link #background()}</li>
+ * <li>{@link #scenario()}</li>
+ * <li>{@link #given()}</li>
+ * <li>{@link #when()}</li>
+ * <li>{@link #then()}</li>
+ * <li>{@link #and()}</li>
+ * <li>{@link #but()}</li>
+ * <li>{@link #background(StepObject)}</li>
+ * <li>{@link #scenario(StepObject)}</li>
+ * <li>{@link #given(StepObject)}</li>
+ * <li>{@link #when(StepObject)}</li>
+ * <li>{@link #then(StepObject)}</li>
+ * <li>{@link #and(StepObject)}</li>
+ * <li>{@link #but(StepObject)}</li>
+ * </ul>
+ */
+public enum Keywords implements Keyword {
+  /**
+   * The empty keyword.
+   */
+  NONE(""),
+  /**
+   * The <em>Background</em> keyword.
+   */
+  BACKGROUND(stringProperty(CONFIG.get().properties, "xteps.keywords.background", "Background")),
+  /**
+   * The <em>Scenario</em> keyword.
+   */
+  SCENARIO(stringProperty(CONFIG.get().properties, "xteps.keywords.scenario", "Scenario")),
+  /**
+   * The <em>Given</em> keyword.
+   */
+  GIVEN(stringProperty(CONFIG.get().properties, "xteps.keywords.given", "Given")),
+  /**
+   * The <em>When</em> keyword.
+   */
+  WHEN(stringProperty(CONFIG.get().properties, "xteps.keywords.when", "When")),
+  /**
+   * The <em>Then</em> keyword.
+   */
+  THEN(stringProperty(CONFIG.get().properties, "xteps.keywords.then", "Then")),
+  /**
+   * The <em>And</em> keyword.
+   */
+  AND(stringProperty(CONFIG.get().properties, "xteps.keywords.and", "And")),
+  /**
+   * The <em>But</em> keyword.
+   */
+  BUT(stringProperty(CONFIG.get().properties, "xteps.keywords.but", "But"));
+
+  private final String str;
+
+  Keywords(final String str) {
+    this.str = str;
   }
 
-  public static Keyword scenario() {
-    return XtepsBase.CONFIG.get().scenarioKeyword;
+  @Override
+  public final String toString() {
+    return this.str;
   }
 
+  /**
+   * Returns <em>Background</em> keyword.
+   *
+   * @return <em>Background</em> keyword
+   */
   public static Keyword background() {
-    return XtepsBase.CONFIG.get().backgroundKeyword;
+    return BACKGROUND;
   }
 
+  /**
+   * Returns <em>Scenario</em> keyword.
+   *
+   * @return <em>Scenario</em> keyword
+   */
+  public static Keyword scenario() {
+    return SCENARIO;
+  }
+
+  /**
+   * Returns <em>Given</em> keyword.
+   *
+   * @return <em>Given</em> keyword
+   */
   public static Keyword given() {
-    return XtepsBase.CONFIG.get().givenKeyword;
+    return GIVEN;
   }
 
+  /**
+   * Returns <em>When</em> keyword.
+   *
+   * @return <em>When</em> keyword
+   */
   public static Keyword when() {
-    return XtepsBase.CONFIG.get().whenKeyword;
+    return WHEN;
   }
 
+  /**
+   * Returns <em>Then</em> keyword.
+   *
+   * @return <em>Then</em> keyword
+   */
   public static Keyword then() {
-    return XtepsBase.CONFIG.get().thenKeyword;
+    return THEN;
   }
 
+  /**
+   * Returns <em>And</em> keyword.
+   *
+   * @return <em>And</em> keyword
+   */
   public static Keyword and() {
-    return XtepsBase.CONFIG.get().andKeyword;
+    return AND;
   }
 
+  /**
+   * Returns <em>But</em> keyword.
+   *
+   * @return <em>But</em> keyword
+   */
   public static Keyword but() {
-    return XtepsBase.CONFIG.get().butKeyword;
+    return BUT;
   }
 
-  public static <T extends StepObject> T background(final T step) {
-    return Artifacts.withKeyword(background(), step);
+  /**
+   * Returns step object with <em>Background</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>Background</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S background(final S step) {
+    return Artifacts.withKeyword(BACKGROUND, step);
   }
 
-  public static <T extends StepObject> T scenario(final T step) {
-    return Artifacts.withKeyword(scenario(), step);
+  /**
+   * Returns step object with <em>Scenario</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>Scenario</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S scenario(final S step) {
+    return Artifacts.withKeyword(SCENARIO, step);
   }
 
-  public static <T extends StepObject> T given(final T step) {
-    return Artifacts.withKeyword(given(), step);
+  /**
+   * Returns step object with <em>Given</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>Given</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S given(final S step) {
+    return Artifacts.withKeyword(GIVEN, step);
   }
 
-  public static <T extends StepObject> T when(final T step) {
-    return Artifacts.withKeyword(when(), step);
+  /**
+   * Returns step object with <em>When</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>When</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S when(final S step) {
+    return Artifacts.withKeyword(WHEN, step);
   }
 
-  public static <T extends StepObject> T then(final T step) {
-    return Artifacts.withKeyword(then(), step);
+  /**
+   * Returns step object with <em>Then</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>Then</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S then(final S step) {
+    return Artifacts.withKeyword(THEN, step);
   }
 
-  public static <T extends StepObject> T and(final T step) {
-    return Artifacts.withKeyword(and(), step);
+  /**
+   * Returns step object with <em>And</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>And</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S and(final S step) {
+    return Artifacts.withKeyword(AND, step);
   }
 
-  public static <T extends StepObject> T but(final T step) {
-    return Artifacts.withKeyword(but(), step);
+  /**
+   * Returns step object with <em>But</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>But</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S but(final S step) {
+    return Artifacts.withKeyword(BUT, step);
   }
 }

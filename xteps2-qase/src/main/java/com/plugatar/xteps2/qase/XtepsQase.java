@@ -17,11 +17,14 @@ package com.plugatar.xteps2.qase;
 
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
+import com.plugatar.xteps2.core.XtepsException;
 import io.qase.api.StepStorage;
 import io.qase.api.utils.IntegrationUtils;
 import io.qase.client.model.ResultCreateStepsInner;
 
 import java.util.Map;
+
+import static com.plugatar.xteps2.XtepsBase.textFormatter;
 
 /**
  * {@link StepListener} implementation for Qase.
@@ -37,23 +40,30 @@ public class XtepsQase implements StepListener {
   }
 
   /**
+   * Ctor.
+   *
    * @param emptyNameReplacement the empty step name replacement
+   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
    */
   public XtepsQase(final String emptyNameReplacement) {
-    if (emptyNameReplacement == null) { throw new NullPointerException("emptyNameReplacement arg is null"); }
-    if (emptyNameReplacement.isEmpty()) { throw new IllegalArgumentException("emptyNameReplacement arg is empty"); }
+    if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }
+    if (emptyNameReplacement.isEmpty()) { throw new XtepsException("emptyNameReplacement arg is empty"); }
     this.emptyNameReplacement = emptyNameReplacement;
   }
 
   @Override
   public final void stepStarted(final String uuid,
                                 final Map<String, ?> artifacts) {
-    final Keyword keyword = StepListener.Utils.keyword(artifacts);
-    final String name = StepListener.Utils.name(artifacts);
-    final String desc = StepListener.Utils.desc(artifacts);
+    final Keyword keyword = Utils.keyword(artifacts);
+    final String name = Utils.name(artifacts);
+    final String desc = Utils.desc(artifacts);
+    final Map<String, Object> replacements = Utils.replacements(artifacts);
     StepStorage.startStep();
     StepStorage.getCurrentStep()
-      .action(StepListener.Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement))
+      .action(textFormatter().format(
+        Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
+        replacements
+      ))
       .comment(desc);
   }
 

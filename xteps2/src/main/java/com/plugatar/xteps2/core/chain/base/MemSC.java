@@ -15,9 +15,25 @@
  */
 package com.plugatar.xteps2.core.chain.base;
 
+/**
+ * Memorizing step chain.
+ *
+ * @param <P> the type of the previous step chain
+ * @param <F> the type of the non-memorizing step chain
+ */
 public interface MemSC<P extends StepChain<?>, F extends StepChain<?>> {
 
+  /**
+   * Returns previous step chain.
+   *
+   * @return previous step chain
+   */
   P previous();
 
+  /**
+   * Returns non-memorizing step chain.
+   *
+   * @return non-memorizing step chain
+   */
   F forget();
 }

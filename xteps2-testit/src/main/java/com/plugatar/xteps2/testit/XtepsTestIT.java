@@ -17,6 +17,7 @@ package com.plugatar.xteps2.testit;
 
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
+import com.plugatar.xteps2.core.XtepsException;
 import ru.testit.models.ItemStatus;
 import ru.testit.models.StepResult;
 import ru.testit.services.Adapter;
@@ -24,6 +25,8 @@ import ru.testit.services.AdapterManager;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.plugatar.xteps2.XtepsBase.textFormatter;
 
 /**
  * {@link StepListener} implementation for Test IT.
@@ -42,29 +45,33 @@ public class XtepsTestIT implements StepListener {
    * Ctor.
    *
    * @param emptyNameReplacement the empty step name replacement
+   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
    */
   public XtepsTestIT(final String emptyNameReplacement) {
-    if (emptyNameReplacement == null) { throw new NullPointerException("emptyNameReplacement arg is null"); }
-    if (emptyNameReplacement.isEmpty()) { throw new IllegalArgumentException("emptyNameReplacement arg is empty"); }
+    if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }
+    if (emptyNameReplacement.isEmpty()) { throw new XtepsException("emptyNameReplacement arg is empty"); }
     this.emptyNameReplacement = emptyNameReplacement;
   }
 
   @Override
   public final void stepStarted(final String uuid,
                                 final Map<String, ?> artifacts) {
-    final Keyword keyword = StepListener.Utils.keyword(artifacts);
-    final String name = StepListener.Utils.name(artifacts);
-    final String desc = StepListener.Utils.desc(artifacts);
-    final Map<String, Object> params = StepListener.Utils.params(artifacts);
+    final Keyword keyword = Utils.keyword(artifacts);
+    final String name = Utils.name(artifacts);
+    final String desc = Utils.desc(artifacts);
+    final Map<String, Object> params = Utils.params(artifacts);
+    final Map<String, Object> replacements = Utils.replacements(artifacts);
     final StepResult stepResult = new StepResult();
-    stepResult.setName(StepListener.Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement));
+    stepResult.setName(textFormatter().format(
+      Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
+      replacements
+    ));
     if (!desc.isEmpty()) {
       stepResult.setDescription(desc);
     }
     if (!params.isEmpty()) {
       final Map<String, String> processedParams = new HashMap<>();
-      params.forEach((paramName, paramValue) ->
-        processedParams.put(paramName, StepListener.Utils.asString(paramValue)));
+      params.forEach((paramName, paramValue) -> processedParams.put(paramName, textFormatter().asString(paramValue)));
       stepResult.setParameters(processedParams);
     }
     Adapter.getAdapterManager().startStep(uuid, stepResult);

@@ -17,45 +17,70 @@ package com.plugatar.xteps2.core.chain;
 
 import com.plugatar.xteps2.core.HookContainer;
 import com.plugatar.xteps2.core.StepExecutor;
+import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.chain.base.BaseCtxSC;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
 
 import static com.plugatar.xteps2.core.HookPriority.NORM_HOOK_PRIORITY;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.correctPriorityArg;
+import static com.plugatar.xteps2.core.chain.StepChainUtils.checkPriorityArg;
 import static com.plugatar.xteps2.core.chain.StepChainUtils.currentStepExecutor;
 import static com.plugatar.xteps2.core.chain.StepChainUtils.currentTestHookContainer;
 import static com.plugatar.xteps2.core.chain.StepChainUtils.newChainHookContainer;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.notNullArg;
 
+/**
+ * Context step chain.
+ *
+ * @param <C> the type of the context
+ */
 public interface CtxSC<C> extends BaseCtxSC<C, CtxSC<C>> {
 
   @Override
   <R> MemBiCtxSC<R, C, CtxSC<C>> with(ThFunction<? super C, ? extends R, ?> action);
 
   @Override
-  <R> CtxSC<R> map(final ThFunction<? super C, ? extends R, ?> mapper);
+  <R> CtxSC<R> map(final ThFunction<? super C, ? extends R, ?> action);
 
+  /**
+   * Default {@code CtxSC} implementation.
+   *
+   * @param <C> the type of the context
+   */
   class Of<C> implements CtxSC<C> {
     private final StepExecutor executor;
     private final HookContainer hooks;
     private final C context;
 
+    /**
+     * Ctor.
+     *
+     * @param context the context
+     * @throws XtepsException if Xteps configuration is incorrect
+     */
     public Of(final C context) {
       this(currentStepExecutor(), newChainHookContainer(), context);
     }
 
+    /**
+     * Ctor.
+     *
+     * @param executor the step executor
+     * @param hooks    the hooks container
+     * @param context  the context
+     */
     public Of(final StepExecutor executor,
               final HookContainer hooks,
               final C context) {
-      this.executor = notNullArg("executor", executor);
-      this.hooks = notNullArg("hooks", hooks);
+      if (executor == null) { throw new XtepsException("executor arg is null"); }
+      if (hooks == null) { throw new XtepsException("hooks arg is null"); }
+      this.executor = executor;
+      this.hooks = hooks;
       this.context = context;
     }
 
     @Override
     public final CtxSC<C> next(final ThConsumer<? super C, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       this.executor.exec(this.hooks, () -> {
         action.accept(this.context);
         return null;
@@ -65,20 +90,20 @@ public interface CtxSC<C> extends BaseCtxSC<C, CtxSC<C>> {
 
     @Override
     public final <R> MemBiCtxSC<R, C, CtxSC<C>> with(final ThFunction<? super C, ? extends R, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       return new MemBiCtxSC.Of<>(this.executor, this.hooks, this.executor.exec(this.hooks, () -> action.apply(this.context)),
         this.context, this);
     }
 
     @Override
     public final <R> R res(final ThFunction<? super C, ? extends R, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       return this.executor.exec(this.hooks, () -> action.apply(this.context));
     }
 
     @Override
     public final CtxSC<C> chain(final ThConsumer<? super CtxSC<C>, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       this.executor.exec(this.hooks, () -> {
         action.accept(this);
         return null;
@@ -88,14 +113,14 @@ public interface CtxSC<C> extends BaseCtxSC<C, CtxSC<C>> {
 
     @Override
     public final <R> R chainRes(final ThFunction<? super CtxSC<C>, ? extends R, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       return this.executor.exec(this.hooks, () -> action.apply(this));
     }
 
     @Override
-    public final <R> CtxSC<R> map(final ThFunction<? super C, ? extends R, ?> mapper) {
-      notNullArg("mapper", mapper);
-      return new CtxSC.Of<>(this.executor, this.hooks, this.executor.exec(this.hooks, () -> mapper.apply(this.context)));
+    public final <R> CtxSC<R> map(final ThFunction<? super C, ? extends R, ?> action) {
+      if (action == null) { throw new XtepsException("action arg is null"); }
+      return new CtxSC.Of<>(this.executor, this.hooks, this.executor.exec(this.hooks, () -> action.apply(this.context)));
     }
 
     @Override
@@ -122,8 +147,8 @@ public interface CtxSC<C> extends BaseCtxSC<C, CtxSC<C>> {
     @Override
     public final CtxSC<C> chainHook(final int priority,
                                     final ThConsumer<? super C, ?> action) {
-      notNullArg("action", action);
-      correctPriorityArg(priority);
+      if (action == null) { throw new XtepsException("action arg is null"); }
+      checkPriorityArg(priority);
       this.hooks.addHook(priority, () -> action.accept(this.context));
       return this;
     }
@@ -136,8 +161,8 @@ public interface CtxSC<C> extends BaseCtxSC<C, CtxSC<C>> {
     @Override
     public final CtxSC<C> testHook(final int priority,
                                    final ThConsumer<? super C, ?> action) {
-      notNullArg("action", action);
-      correctPriorityArg(priority);
+      if (action == null) { throw new XtepsException("action arg is null"); }
+      checkPriorityArg(priority);
       currentTestHookContainer().addHook(priority, () -> action.accept(this.context));
       return this;
     }

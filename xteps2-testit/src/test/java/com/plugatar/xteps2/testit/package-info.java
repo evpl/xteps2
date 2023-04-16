@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Tests for {@link com.plugatar.xteps2.core.step} package.
+ * Tests for {@link com.plugatar.xteps2.testit} package.
  */
-package com.plugatar.xteps2.core.step;
+package com.plugatar.xteps2.testit;

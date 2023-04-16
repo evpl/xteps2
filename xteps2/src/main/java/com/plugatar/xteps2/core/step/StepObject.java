@@ -15,6 +15,8 @@
  */
 package com.plugatar.xteps2.core.step;
 
+import com.plugatar.xteps2.core.XtepsException;
+
 import java.util.Optional;
 
 /**
@@ -25,18 +27,20 @@ public interface StepObject {
   /**
    * Returns step object with given artifact.
    *
-   * @param key   the artifact key
+   * @param name  the artifact name
    * @param value the artifact value
    * @return step object with given artifact
+   * @throws XtepsException if {@code value} arg is null
    */
-  StepObject withArtifact(String key,
+  StepObject withArtifact(String name,
                           Object value);
 
   /**
-   * Returns artifact by key.
+   * Returns artifact by name.
    *
-   * @param key the artifact key
+   * @param name the artifact name
    * @return optional artifact value
+   * @throws XtepsException if {@code name} arg is null
    */
-  Optional<Object> artifact(String key);
+  Optional<Object> artifact(String name);
 }

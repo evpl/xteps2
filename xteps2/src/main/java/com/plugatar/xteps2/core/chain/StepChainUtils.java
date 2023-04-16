@@ -38,20 +38,12 @@ final class StepChainUtils {
   }
 
   static HookContainer newChainHookContainer() {
-    return new HookContainer.Of();
+    return new HookContainer.Default();
   }
 
-  static void correctPriorityArg(final int priority) {
+  static void checkPriorityArg(final int priority) {
     if (priority < MIN_HOOK_PRIORITY || priority > MAX_HOOK_PRIORITY) {
       throw new XtepsException("priority arg not in the range " + MIN_HOOK_PRIORITY + " to " + MAX_HOOK_PRIORITY);
     }
-  }
-
-  static <R> R notNullArg(final String argName,
-                          final R obj) {
-    if (obj == null) {
-      throw new XtepsException(argName + " is null");
-    }
-    return obj;
   }
 }

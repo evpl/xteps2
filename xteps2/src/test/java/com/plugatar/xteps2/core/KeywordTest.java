@@ -13,7 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.plugatar.xteps2.core;
+
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 /**
- * Tests for {@link com.plugatar.xteps2.core.chain} package.
+ * Tests for {@link Keyword}.
  */
-package com.plugatar.xteps2.core.chain;
+final class KeywordTest {
+
+  @Test
+  void ctorThrowsExceptionForNullNameArg() {
+    assertThatCode(() -> new Keyword.Of((String) null))
+      .isInstanceOf(XtepsException.class);
+  }
+
+  @Test
+  void toStringMethod() {
+    final String name = "";
+    final Keyword keyword = new Keyword.Of(name);
+
+    assertThat(keyword.toString()).isSameAs(name);
+  }
+}

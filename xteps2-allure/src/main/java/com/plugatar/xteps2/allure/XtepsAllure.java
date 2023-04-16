@@ -17,6 +17,7 @@ package com.plugatar.xteps2.allure;
 
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
+import com.plugatar.xteps2.core.XtepsException;
 import io.qameta.allure.Allure;
 import io.qameta.allure.AllureLifecycle;
 import io.qameta.allure.model.Parameter;
@@ -26,6 +27,8 @@ import io.qameta.allure.util.ResultsUtils;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.plugatar.xteps2.XtepsBase.textFormatter;
 
 /**
  * {@link StepListener} implementation for Allure.
@@ -46,6 +49,8 @@ public class XtepsAllure implements StepListener {
    *
    * @param emptyNameReplacement the empty step name replacement
    * @param descAttachmentName   the step description attachment name
+   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
+   *                        or if {@code descAttachmentName} arg is null or empty
    */
   public XtepsAllure(final String emptyNameReplacement,
                      final String descAttachmentName) {
@@ -60,19 +65,23 @@ public class XtepsAllure implements StepListener {
   @Override
   public void stepStarted(final String uuid,
                           final Map<String, ?> artifacts) {
-    final Keyword keyword = StepListener.Utils.keyword(artifacts);
-    final String name = StepListener.Utils.name(artifacts);
-    final String desc = StepListener.Utils.desc(artifacts);
-    final Map<String, Object> params = StepListener.Utils.params(artifacts);
+    final Keyword keyword = Utils.keyword(artifacts);
+    final String name = Utils.name(artifacts);
+    final String desc = Utils.desc(artifacts);
+    final Map<String, Object> params = Utils.params(artifacts);
+    final Map<String, Object> replacements = Utils.replacements(artifacts);
     final StepResult stepResult = new StepResult();
-    stepResult.setName(StepListener.Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement));
+    stepResult.setName(textFormatter().format(
+      Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
+      replacements
+    ));
     if (!desc.isEmpty()) {
       stepResult.setDescription(desc);
     }
     if (!params.isEmpty()) {
       final List<Parameter> allureParams = stepResult.getParameters();
       params.forEach((paramName, paramValue) ->
-        allureParams.add(new Parameter().setName(paramName).setValue(StepListener.Utils.asString(paramValue))));
+        allureParams.add(new Parameter().setName(paramName).setValue(textFormatter().asString(paramValue))));
     }
     Allure.getLifecycle().startStep(uuid, stepResult);
   }

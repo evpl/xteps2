@@ -17,8 +17,21 @@ package com.plugatar.xteps2.core;
 
 import com.plugatar.xteps2.core.function.ThRunnable;
 
+/**
+ * Test hook container.
+ */
 public interface TestHookContainer {
 
+  /**
+   * Adds given hook to this container.
+   *
+   * @param priority the priority
+   * @param hook     the hook
+   * @throws XtepsException if current test not found
+   *                        if {@code hook} is null
+   *                        or if {@code priority} is not in the range {@link HookPriority#MIN_HOOK_PRIORITY} to
+   *                        {@link HookPriority#MAX_HOOK_PRIORITY}
+   */
   void addHook(final int priority,
                final ThRunnable<?> hook);
 }

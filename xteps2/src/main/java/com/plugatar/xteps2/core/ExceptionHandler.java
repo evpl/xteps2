@@ -23,18 +23,42 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
+/**
+ * Exception handler.
+ */
 public interface ExceptionHandler {
 
+  /**
+   * Handles given exception.
+   *
+   * @param exception the exception
+   * @throws XtepsException if {@code exception} arg is null
+   */
   void handle(Throwable exception);
 
-  class RemovingXtepsLinesStackTraceExceptionHandler implements ExceptionHandler {
+  /**
+   * Default {@code ExceptionHandler} implementation.
+   */
+  class CleanStackTraceExceptionHandler implements ExceptionHandler {
     private static final ThreadLocal<FixedMaxSizeUniqueQueue<Throwable>> EXCEPTIONS =
       ThreadLocal.withInitial(FixedMaxSizeUniqueQueue::new);
-    private final Predicate<StackTraceElement> notXtepsClassStackTraceElementFilter;
+    private final Predicate<StackTraceElement> cleanStackTraceElementFilter;
 
-    public RemovingXtepsLinesStackTraceExceptionHandler() {
+    /**
+     * Ctor.
+     */
+    public CleanStackTraceExceptionHandler() {
       final String xtepsClassPrefix = "com.plugatar.xteps2";
-      this.notXtepsClassStackTraceElementFilter = element -> !element.getClassName().startsWith(xtepsClassPrefix);
+      final String aspectjClassPrefix = "org.aspectj";
+      final String aspectjClassPointer = "$AjcClosure";
+      final String aspectjMethodPointer = "_aroundBody";
+      this.cleanStackTraceElementFilter = element -> {
+        final String className = element.getClassName();
+        return !(className.startsWith(xtepsClassPrefix)
+          || className.startsWith(aspectjClassPrefix)
+          || className.contains(aspectjClassPointer)
+          || element.getMethodName().contains(aspectjMethodPointer));
+      };
     }
 
     @Override
@@ -48,7 +72,7 @@ public interface ExceptionHandler {
           final StackTraceElement[] originST = currentEx.getStackTrace();
           if (originST.length != 0) {
             final StackTraceElement[] cleanST = Arrays.stream(originST)
-              .filter(this.notXtepsClassStackTraceElementFilter)
+              .filter(this.cleanStackTraceElementFilter)
               .toArray(StackTraceElement[]::new);
             if (cleanST.length != originST.length) {
               currentEx.setStackTrace(cleanST);

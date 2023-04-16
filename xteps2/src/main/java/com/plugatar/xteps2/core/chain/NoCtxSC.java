@@ -17,6 +17,7 @@ package com.plugatar.xteps2.core.chain;
 
 import com.plugatar.xteps2.core.HookContainer;
 import com.plugatar.xteps2.core.StepExecutor;
+import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.chain.base.BaseNoCtxSC;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
@@ -24,34 +25,52 @@ import com.plugatar.xteps2.core.function.ThRunnable;
 import com.plugatar.xteps2.core.function.ThSupplier;
 
 import static com.plugatar.xteps2.core.HookPriority.NORM_HOOK_PRIORITY;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.correctPriorityArg;
+import static com.plugatar.xteps2.core.chain.StepChainUtils.checkPriorityArg;
 import static com.plugatar.xteps2.core.chain.StepChainUtils.currentStepExecutor;
 import static com.plugatar.xteps2.core.chain.StepChainUtils.currentTestHookContainer;
 import static com.plugatar.xteps2.core.chain.StepChainUtils.newChainHookContainer;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.notNullArg;
 
+/**
+ * No context step chain.
+ */
 public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
 
   @Override
   <R> CtxSC<R> with(ThSupplier<? extends R, ?> action);
 
+  /**
+   * Default {@code NoCtxSC} implementation.
+   */
   class Of implements NoCtxSC {
     private final StepExecutor executor;
     private final HookContainer hooks;
 
+    /**
+     * Ctor.
+     *
+     * @throws XtepsException if Xteps configuration is incorrect
+     */
     public Of() {
       this(currentStepExecutor(), newChainHookContainer());
     }
 
+    /**
+     * Ctor.
+     *
+     * @param executor the step executor
+     * @param hooks    the hooks container
+     */
     public Of(final StepExecutor executor,
               final HookContainer hooks) {
-      this.executor = notNullArg("executor", executor);
-      this.hooks = notNullArg("hooks", hooks);
+      if (executor == null) { throw new XtepsException("executor arg is null"); }
+      if (hooks == null) { throw new XtepsException("hooks arg is null"); }
+      this.executor = executor;
+      this.hooks = hooks;
     }
 
     @Override
     public final NoCtxSC next(final ThRunnable<?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       this.executor.exec(this.hooks, () -> {
         action.run();
         return null;
@@ -61,19 +80,19 @@ public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
 
     @Override
     public final <R> CtxSC<R> with(final ThSupplier<? extends R, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       return new CtxSC.Of<>(this.executor, this.hooks, this.executor.exec(this.hooks, action));
     }
 
     @Override
     public final <R> R res(final ThSupplier<? extends R, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       return this.executor.exec(this.hooks, action);
     }
 
     @Override
     public final NoCtxSC chain(final ThConsumer<? super NoCtxSC, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       this.executor.exec(this.hooks, () -> {
         action.accept(this);
         return null;
@@ -83,7 +102,7 @@ public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
 
     @Override
     public final <R> R chainRes(final ThFunction<? super NoCtxSC, ? extends R, ?> action) {
-      notNullArg("action", action);
+      if (action == null) { throw new XtepsException("action arg is null"); }
       return this.executor.exec(this.hooks, () -> action.apply(this));
     }
 
@@ -101,8 +120,8 @@ public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
     @Override
     public final NoCtxSC chainHook(final int priority,
                                    final ThRunnable<?> action) {
-      notNullArg("action", action);
-      correctPriorityArg(priority);
+      if (action == null) { throw new XtepsException("action arg is null"); }
+      checkPriorityArg(priority);
       this.hooks.addHook(priority, action);
       return this;
     }
@@ -115,8 +134,8 @@ public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
     @Override
     public final NoCtxSC testHook(final int priority,
                                   final ThRunnable<?> action) {
-      notNullArg("action", action);
-      correctPriorityArg(priority);
+      if (action == null) { throw new XtepsException("action arg is null"); }
+      checkPriorityArg(priority);
       currentTestHookContainer().addHook(priority, action);
       return this;
     }

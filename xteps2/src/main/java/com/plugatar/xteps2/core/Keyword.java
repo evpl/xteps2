@@ -15,23 +15,39 @@
  */
 package com.plugatar.xteps2.core;
 
+/**
+ * Keyword.
+ */
 public interface Keyword {
-  Keyword EMPTY = new Keyword.Of("");
 
+  /**
+   * Returns keyword string representation.
+   *
+   * @return string representation
+   */
   @Override
   String toString();
 
+  /**
+   * Default {@code Keyword} implementation.
+   */
   class Of implements Keyword {
     private final String name;
 
+    /**
+     * Ctor.
+     *
+     * @param name the name
+     * @throws XtepsException if {@code name} arg is null
+     */
     public Of(final String name) {
       if (name == null) { throw new XtepsException("name arg is null"); }
       this.name = name;
     }
 
     @Override
-    public String toString() {
-      return name;
+    public final String toString() {
+      return this.name;
     }
   }
 }

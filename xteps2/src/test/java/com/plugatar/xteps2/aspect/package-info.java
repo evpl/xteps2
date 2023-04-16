@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Tests for {@link com.plugatar.xteps2.core.chain.base} package.
+ * Tests for {@link com.plugatar.xteps2.aspect} package.
  */
-package com.plugatar.xteps2.core.chain.base;
+package com.plugatar.xteps2.aspect;

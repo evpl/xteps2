@@ -58,7 +58,12 @@
   </scm>
 
   <dependencies>
-    <!-- self dependencies -->
+    <!-- used dependencies -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

@@ -20,24 +20,24 @@ package com.plugatar.xteps2.core;
  */
 public final class HookPriority {
 
-    /**
-     * The minimum priority that a hook can have.
-     */
-    public static final int MIN_HOOK_PRIORITY = 0;
+  /**
+   * The minimum priority that a hook can have.
+   */
+  public static final int MIN_HOOK_PRIORITY = 0;
 
-    /**
-     * The default priority that is assigned to a hook.
-     */
-    public static final int NORM_HOOK_PRIORITY = 5;
+  /**
+   * The default priority that is assigned to a hook.
+   */
+  public static final int NORM_HOOK_PRIORITY = 5;
 
-    /**
-     * The maximum priority that a hook can have.
-     */
-    public static final int MAX_HOOK_PRIORITY = 10;
+  /**
+   * The maximum priority that a hook can have.
+   */
+  public static final int MAX_HOOK_PRIORITY = 10;
 
-    /**
-     * Utility class ctor.
-     */
-    private HookPriority() {
-    }
+  /**
+   * Utility class ctor.
+   */
+  private HookPriority() {
+  }
 }

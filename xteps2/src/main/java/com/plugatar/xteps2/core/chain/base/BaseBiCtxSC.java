@@ -15,31 +15,122 @@
  */
 package com.plugatar.xteps2.core.chain.base;
 
+import com.plugatar.xteps2.core.HookPriority;
+import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThBiConsumer;
 import com.plugatar.xteps2.core.function.ThBiFunction;
 
+/**
+ * Base bi context step chain.
+ *
+ * @param <C1> the type of the first context
+ * @param <C2> the type of the second context
+ * @param <S>  the type of the step chain implementing {@code BaseBiCtxSC}
+ */
 public interface BaseBiCtxSC<C1, C2, S extends BaseBiCtxSC<C1, C2, S>> extends StepChain<S>, BaseAnyCtxSC<S> {
 
+  /**
+   * Performs given action.
+   *
+   * @param action the action
+   * @return this step chain
+   * @throws XtepsException if {@code action} is null
+   */
   S next(ThBiConsumer<? super C1, ? super C2, ?> action);
 
+  /**
+   * Performs given action and returns new context step chain.
+   *
+   * @param action the action
+   * @param <R>    the type of the new context
+   * @return new context step chain
+   * @throws XtepsException if {@code action} is null
+   */
   <R> BaseTriCtxSC<R, C1, C2, ?> with(ThBiFunction<? super C1, ? super C2, ? extends R, ?> action);
 
+  /**
+   * Performs given action and returns action result.
+   *
+   * @param action the action
+   * @param <R>    the type of the result
+   * @return action result
+   * @throws XtepsException if {@code action} is null
+   */
   <R> R res(ThBiFunction<? super C1, ? super C2, ? extends R, ?> action);
 
-  <R1, R2> BaseBiCtxSC<R1, R2, ?> map(final ThBiFunction<? super C1, ? super C2, ? extends R1, ?> mapper1,
-                                      final ThBiFunction<? super C1, ? super C2, ? extends R2, ?> mapper2);
+  /**
+   * Performs given action and returns new context step chain.
+   *
+   * @param action1 the first action
+   * @param action2 the second action
+   * @param <R1>    the type of the new context
+   * @param <R2>    the type of the new context
+   * @return new context step chain
+   * @throws XtepsException if {@code action1} is null
+   *                        or if {@code action2} is null
+   */
+  <R1, R2> BaseBiCtxSC<R1, R2, ?> map(final ThBiFunction<? super C1, ? super C2, ? extends R1, ?> action1,
+                                      final ThBiFunction<? super C1, ? super C2, ? extends R2, ?> action2);
 
+  /**
+   * Returns the first context.
+   *
+   * @return the first context
+   */
   C1 context1();
 
+  /**
+   * Returns the second context.
+   *
+   * @return the second context
+   */
   C2 context2();
 
+  /**
+   * Adds given hook to this steps chain.
+   *
+   * @param action the action
+   * @return this step chain
+   * @throws XtepsException if {@code action} is null
+   */
   S chainHook(ThBiConsumer<? super C1, ? super C2, ?> action);
 
+  /**
+   * Adds given hook with given priority to this steps chain.
+   *
+   * @param priority the priority
+   * @param action   the action
+   * @return this step chain
+   * @throws XtepsException if {@code action} is null
+   *                        or if {@code priority} is not in the range {@link HookPriority#MIN_HOOK_PRIORITY} to
+   *                        {@link HookPriority#MAX_HOOK_PRIORITY}
+   */
   S chainHook(int priority,
               ThBiConsumer<? super C1, ? super C2, ?> action);
 
+  /**
+   * Adds given hook for the current test.
+   *
+   * @param action the action
+   * @return this step chain
+   * @throws XtepsException if {@code TestHookContainer} implementation not found
+   *                        or if current test not found
+   *                        or if {@code action} is null
+   */
   S testHook(ThBiConsumer<? super C1, ? super C2, ?> action);
 
+  /**
+   * Adds given hook with given priority for the current test.
+   *
+   * @param priority the priority
+   * @param action   the action
+   * @return this step chain
+   * @throws XtepsException if {@code TestHookContainer} implementation not found
+   *                        or if current test not found
+   *                        or if {@code action} is null
+   *                        or if {@code priority} is not in the range {@link HookPriority#MIN_HOOK_PRIORITY} to
+   *                        {@link HookPriority#MAX_HOOK_PRIORITY}
+   */
   S testHook(int priority,
              ThBiConsumer<? super C1, ? super C2, ?> action);
 }

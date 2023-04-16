@@ -21,10 +21,13 @@ import com.epam.ta.reportportal.ws.model.ParameterResource;
 import com.epam.ta.reportportal.ws.model.StartTestItemRQ;
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
+import com.plugatar.xteps2.core.XtepsException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.plugatar.xteps2.XtepsBase.textFormatter;
 
 /**
  * {@link StepListener} implementation for Report Portal.
@@ -43,10 +46,11 @@ public class XtepsReportPortal implements StepListener {
    * Ctor.
    *
    * @param emptyNameReplacement the empty step name replacement
+   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
    */
   public XtepsReportPortal(final String emptyNameReplacement) {
-    if (emptyNameReplacement == null) { throw new NullPointerException("emptyNameReplacement arg is null"); }
-    if (emptyNameReplacement.isEmpty()) { throw new IllegalArgumentException("emptyNameReplacement arg is empty"); }
+    if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }
+    if (emptyNameReplacement.isEmpty()) { throw new XtepsException("emptyNameReplacement arg is empty"); }
     this.emptyNameReplacement = emptyNameReplacement;
   }
 
@@ -55,12 +59,16 @@ public class XtepsReportPortal implements StepListener {
                                 final Map<String, ?> artifacts) {
     final Launch launch = Launch.currentLaunch();
     if (launch != null) {
-      final Keyword keyword = StepListener.Utils.keyword(artifacts);
-      final String name = StepListener.Utils.name(artifacts);
-      final String desc = StepListener.Utils.desc(artifacts);
-      final Map<String, Object> params = StepListener.Utils.params(artifacts);
+      final Keyword keyword = Utils.keyword(artifacts);
+      final String name = Utils.name(artifacts);
+      final String desc = Utils.desc(artifacts);
+      final Map<String, Object> params = Utils.params(artifacts);
+      final Map<String, Object> replacements = Utils.replacements(artifacts);
       final StartTestItemRQ startTestItemRQ = StepRequestUtils.buildStartStepRequest(
-        StepListener.Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
+        textFormatter().format(
+          Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
+          replacements
+        ),
         desc
       );
       if (!params.isEmpty()) {
@@ -68,7 +76,7 @@ public class XtepsReportPortal implements StepListener {
         params.forEach((paramName, paramValue) -> {
           final ParameterResource param = new ParameterResource();
           param.setKey(paramName);
-          param.setValue(StepListener.Utils.asString(paramValue));
+          param.setValue(textFormatter().asString(paramValue));
           rpParams.add(param);
         });
         startTestItemRQ.setParameters(rpParams);
