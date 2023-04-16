@@ -26,10 +26,11 @@ import java.lang.annotation.Target;
 /**
  * Annotation to mark step methods or constructors. Method or constructor execution will be
  * logged as a step to Xteps.
- * <br><br>You can use method or constructor arguments as step name replacements.
+ * <p>
+ * You can use method or constructor arguments as step name replacements.
  * By index (like <i>{0}</i>, <i>{1}</i>) or by argument names (like <i>{methodFirstArgument}</i>, <i>{arg}</i>).
- * <br>Other step name replacements:
  * <table>
+ * <caption>Other step name replacements</caption>
  * <tr><th> Replacement name </th><th> Description </th></tr>
  * <tr><td> <i>class</i>     </td><td> Returns the {@link Class} instance. </td></tr>
  * <tr><td> <i>method</i>    </td><td> Returns the {@link java.lang.reflect.Method} instance, only for method steps. </td></tr>
