@@ -28,6 +28,8 @@
   <artifactId>xteps2-testit</artifactId>
   <packaging>jar</packaging>
 
+  <name>xteps2-testit</name>
+  <description>Module xteps2-testit of Xteps2 framework</description>
   <url>https://github.com/evpl/xteps2</url>
 
   <developers>

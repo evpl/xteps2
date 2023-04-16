@@ -34,6 +34,8 @@
     <module>xteps2-testng</module>
   </modules>
 
+  <name>parent</name>
+  <description>Xteps2 parent POM</description>
   <url>https://github.com/evpl/xteps2</url>
 
   <developers>
@@ -64,7 +66,7 @@
   </scm>
 
   <properties>
-    <revision>0.0-SNAPSHOT</revision>
+    <revision>0.1</revision>
     <java.version>1.8</java.version>
     <aspectj.version>1.9.19</aspectj.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -124,12 +126,12 @@
       <dependency>
         <groupId>io.qase</groupId>
         <artifactId>qase-api</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.4</version>
       </dependency>
       <dependency>
         <groupId>com.epam.reportportal</groupId>
         <artifactId>client-java</artifactId>
-        <version>5.1.14</version>
+        <version>5.1.17</version>
       </dependency>
       <dependency>
         <groupId>ru.testit</groupId>
@@ -140,7 +142,7 @@
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
-        <version>5.9.1</version>
+        <version>5.9.2</version>
       </dependency>
       <dependency>
         <groupId>org.testng</groupId>
@@ -151,7 +153,7 @@
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-params</artifactId>
-        <version>5.9.1</version>
+        <version>5.9.2</version>
       </dependency>
       <dependency>
         <groupId>io.qameta.allure</groupId>
@@ -166,12 +168,12 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.23.1</version>
+        <version>3.24.2</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>4.9.0</version>
+        <version>4.11.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

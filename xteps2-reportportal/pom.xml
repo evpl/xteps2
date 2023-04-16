@@ -28,6 +28,8 @@
   <artifactId>xteps2-reportportal</artifactId>
   <packaging>jar</packaging>
 
+  <name>xteps2-reportportal</name>
+  <description>Module xteps2-reportportal of Xteps2 framework</description>
   <url>https://github.com/evpl/xteps2</url>
 
   <developers>

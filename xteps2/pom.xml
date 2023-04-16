@@ -28,6 +28,8 @@
   <artifactId>xteps2</artifactId>
   <packaging>jar</packaging>
 
+  <name>xteps2</name>
+  <description>Module xteps2 of Xteps2 framework</description>
   <url>https://github.com/evpl/xteps2</url>
 
   <developers>

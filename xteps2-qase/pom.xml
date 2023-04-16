@@ -28,6 +28,8 @@
   <artifactId>xteps2-qase</artifactId>
   <packaging>jar</packaging>
 
+  <name>xteps2-qase</name>
+  <description>Module xteps2-qase of Xteps2 framework</description>
   <url>https://github.com/evpl/xteps2</url>
 
   <developers>
