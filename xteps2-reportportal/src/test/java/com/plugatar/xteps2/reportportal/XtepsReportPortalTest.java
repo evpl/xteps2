@@ -18,7 +18,6 @@ package com.plugatar.xteps2.reportportal;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -29,24 +28,16 @@ final class XtepsReportPortalTest {
 
   @Test
   void stepStartedMethod() {
-    assertThatCode(() -> new XtepsReportPortal().stepStarted(
-      UUID.randomUUID().toString(),
-      new HashMap<>()
-    )).doesNotThrowAnyException();
+    assertThatCode(() -> new XtepsReportPortal().stepStarted(new HashMap<>())).doesNotThrowAnyException();
   }
 
   @Test
   void stepPassedMethod() {
-    assertThatCode(() -> new XtepsReportPortal().stepPassed(
-      UUID.randomUUID().toString()
-    )).doesNotThrowAnyException();
+    assertThatCode(() -> new XtepsReportPortal().stepPassed()).doesNotThrowAnyException();
   }
 
   @Test
   void stepFailedMethod() {
-    assertThatCode(() -> new XtepsReportPortal().stepFailed(
-      UUID.randomUUID().toString(),
-      new Throwable()
-    )).doesNotThrowAnyException();
+    assertThatCode(() -> new XtepsReportPortal().stepFailed(new Throwable())).doesNotThrowAnyException();
   }
 }

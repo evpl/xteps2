@@ -18,7 +18,6 @@ package com.plugatar.xteps2.testit;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -29,24 +28,16 @@ final class XtepsTestITTest {
 
   @Test
   void stepStartedMethod() {
-    assertThatCode(() -> new XtepsTestIT().stepStarted(
-      UUID.randomUUID().toString(),
-      new HashMap<>()
-    )).doesNotThrowAnyException();
+    assertThatCode(() -> new XtepsTestIT().stepStarted(new HashMap<>())).doesNotThrowAnyException();
   }
 
   @Test
   void stepPassedMethod() {
-    assertThatCode(() -> new XtepsTestIT().stepPassed(
-      UUID.randomUUID().toString()
-    )).doesNotThrowAnyException();
+    assertThatCode(() -> new XtepsTestIT().stepPassed()).doesNotThrowAnyException();
   }
 
   @Test
   void stepFailedMethod() {
-    assertThatCode(() -> new XtepsTestIT().stepFailed(
-      UUID.randomUUID().toString(),
-      new Throwable()
-    )).doesNotThrowAnyException();
+    assertThatCode(() -> new XtepsTestIT().stepFailed(new Throwable())).doesNotThrowAnyException();
   }
 }
