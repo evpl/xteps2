@@ -237,6 +237,7 @@ public class StepAspects {
   /**
    * <em>AfterThrowing</em> advice for any method or constructor annotated with {@link Step} annotation.
    *
+   * @param exception the step exception
    * @throws XtepsException if Xteps configuration is incorrect
    */
   @AfterThrowing(value = "withStepAnnotation() && (staticMethod() || nonStaticMethod() || constructor())", throwing = "exception")
