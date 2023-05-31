@@ -20,7 +20,6 @@ import com.plugatar.xteps2.core.StepListener;
 import java.util.Map;
 
 public final class StaticStepListener implements StepListener {
-  private static String stepStartedUUID = null;
   private static Map<String, ?> stepStartedArtifacts = null;
   private static String stepPassedUUID = null;
   private static String stepFailedUUID = null;
@@ -30,17 +29,10 @@ public final class StaticStepListener implements StepListener {
   }
 
   public static void clear() {
-    stepStartedUUID = null;
     stepStartedArtifacts = null;
     stepPassedUUID = null;
     stepFailedUUID = null;
     stepFailedException = null;
-  }
-
-  public static String stepStartedUUID() {
-    final String last = stepStartedUUID;
-    stepStartedUUID = null;
-    return last;
   }
 
   public static Map<String, ?> stepStartedArtifact() {
@@ -68,21 +60,16 @@ public final class StaticStepListener implements StepListener {
   }
 
   @Override
-  public void stepStarted(final String uuid,
-                          final Map<String, ?> artifacts) {
-    stepStartedUUID = uuid;
+  public void stepStarted(final Map<String, ?> artifacts) {
     stepStartedArtifacts = artifacts;
   }
 
   @Override
-  public void stepPassed(final String uuid) {
-    stepPassedUUID = uuid;
+  public void stepPassed() {
   }
 
   @Override
-  public void stepFailed(final String uuid,
-                         final Throwable exception) {
-    stepFailedUUID = uuid;
+  public void stepFailed(final Throwable exception) {
     stepFailedException = exception;
   }
 }

@@ -39,26 +39,17 @@ public interface ExceptionHandler {
   /**
    * Default {@code ExceptionHandler} implementation.
    */
-  class CleanStackTraceExceptionHandler implements ExceptionHandler {
-    private static final ThreadLocal<FixedMaxSizeUniqueQueue<Throwable>> EXCEPTIONS =
-      ThreadLocal.withInitial(FixedMaxSizeUniqueQueue::new);
+  class CleanStackTrace implements ExceptionHandler {
+    private final ThreadLocal<FixedMaxSizeUniqueQueue<Throwable>> cachedExceptions;
     private final Predicate<StackTraceElement> cleanStackTraceElementFilter;
 
     /**
      * Ctor.
      */
-    public CleanStackTraceExceptionHandler() {
+    public CleanStackTrace() {
       final String xtepsClassPrefix = "com.plugatar.xteps2";
-      final String aspectjClassPrefix = "org.aspectj";
-      final String aspectjClassPointer = "$AjcClosure";
-      final String aspectjMethodPointer = "_aroundBody";
-      this.cleanStackTraceElementFilter = element -> {
-        final String className = element.getClassName();
-        return !(className.startsWith(xtepsClassPrefix)
-          || className.startsWith(aspectjClassPrefix)
-          || className.contains(aspectjClassPointer)
-          || element.getMethodName().contains(aspectjMethodPointer));
-      };
+      this.cachedExceptions = ThreadLocal.withInitial(FixedMaxSizeUniqueQueue::new);
+      this.cleanStackTraceElementFilter = element -> !element.getClassName().startsWith(xtepsClassPrefix);
     }
 
     @Override
@@ -68,7 +59,7 @@ public interface ExceptionHandler {
       final Set<Throwable> allRelatedExceptions = Collections.newSetFromMap(new IdentityHashMap<>(8));
       recursivelyAddAllRelatedExceptions(allRelatedExceptions, exception);
       for (final Throwable currentEx : allRelatedExceptions) {
-        if (!(currentEx instanceof XtepsException) && EXCEPTIONS.get().offer(currentEx)) {
+        if (!(currentEx instanceof XtepsException) && this.cachedExceptions.get().offer(currentEx)) {
           final StackTraceElement[] originST = currentEx.getStackTrace();
           if (originST.length != 0) {
             final StackTraceElement[] cleanST = Arrays.stream(originST)
@@ -117,6 +108,20 @@ public interface ExceptionHandler {
         }
         return false;
       }
+    }
+  }
+
+  /**
+   * Fake {@code ExceptionHandler} implementation.
+   */
+  class Fake implements ExceptionHandler {
+
+    public Fake() {
+    }
+
+    @Override
+    public final void handle(final Throwable exception) {
+      if (exception == null) { throw new XtepsException("exception arg is null"); }
     }
   }
 }

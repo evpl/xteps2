@@ -30,7 +30,7 @@ final class ExceptionHandlerTest {
 
   @Test
   void handleMethodThrowsExceptionForNullArg() {
-    final ExceptionHandler handler = new ExceptionHandler.CleanStackTraceExceptionHandler();
+    final ExceptionHandler handler = new ExceptionHandler.CleanStackTrace();
 
     assertThatCode(() -> handler.handle((Throwable) null))
       .isInstanceOf(XtepsException.class);
@@ -38,7 +38,7 @@ final class ExceptionHandlerTest {
 
   @Test
   void handleMethod() {
-    final ExceptionHandler handler = new ExceptionHandler.CleanStackTraceExceptionHandler();
+    final ExceptionHandler handler = new ExceptionHandler.CleanStackTrace();
     final Throwable baseException = new Throwable("base exception");
     final Throwable causeException = new Throwable("cause exception");
     final Throwable suppressedException = new Throwable("suppressed exception");

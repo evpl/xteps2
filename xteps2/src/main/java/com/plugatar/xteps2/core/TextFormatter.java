@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,29 +33,30 @@ import java.util.regex.Pattern;
 public interface TextFormatter {
 
   /**
-   * Formats given text with given replacements.
-   *
-   * @param text        the origin text
-   * @param replacement the replacements
-   * @return formatted text
-   * @throws TextFormatException if it's impossible to format given text correctly
-   */
-  String format(String text,
-                Map<String, Object> replacement);
-
-  /**
    * Returns an object as a string.
    *
    * @param obj the object
    * @return string representation
    * @throws TextFormatException if it's impossible to convert given object to string correctly
    */
-  String asString(Object obj);
+  String format(Object obj);
+
+  /**
+   * Formats given text with given replacements.
+   *
+   * @param text         the origin text
+   * @param replacements the replacements
+   * @return formatted text
+   * @throws TextFormatException if it's impossible to format given text correctly
+   */
+  String format(String text,
+                Map<String, Object> replacements);
 
   /**
    * Default {@code TextFormatter} implementation.
    */
   class Default implements TextFormatter {
+    private final ExceptionHandler exceptionHandler;
     private final Pattern replacementPattern;
     private final boolean fieldForceAccess;
     private final boolean methodForceAccess;
@@ -62,27 +64,66 @@ public interface TextFormatter {
     /**
      * Ctor.
      *
+     * @param exceptionHandler   the exception handler
      * @param replacementPattern the replacement pattern
      * @param fieldForceAccess   the field force access flag
      * @param methodForceAccess  the method force access flag
-     * @throws XtepsException if {@code replacementPattern} is null or
-     *                        contains less than one group
+     * @throws XtepsException if {@code exceptionHandler} is null
+     *                        or if {@code replacementPattern} is null
+     *                        or if {@code replacementPattern} contains less than one group
      */
-    public Default(final Pattern replacementPattern,
+    public Default(final ExceptionHandler exceptionHandler,
+                   final Pattern replacementPattern,
                    final boolean fieldForceAccess,
                    final boolean methodForceAccess) {
-      this.replacementPattern = patternContainsCapturingGroups(replacementPattern);
+      if (exceptionHandler == null) { throw new XtepsException("exceptionHandler arg is null"); }
+      if (replacementPattern == null) { throw new XtepsException("replacementPattern arg is null"); }
+      checkThatPatternContainsCapturingGroups(replacementPattern);
+      this.exceptionHandler = exceptionHandler;
+      this.replacementPattern = replacementPattern;
       this.fieldForceAccess = fieldForceAccess;
       this.methodForceAccess = methodForceAccess;
     }
 
-    private static Pattern patternContainsCapturingGroups(final Pattern pattern) {
-      if (pattern == null) { throw new XtepsException("replacementPattern arg is null"); }
+    private static void checkThatPatternContainsCapturingGroups(final Pattern pattern) {
       if (pattern.matcher("").groupCount() < 1) {
         throw new XtepsException("replacementPattern arg " + pattern + " doesn't contain groups, " +
           "pattern must contain at least one group");
       }
-      return pattern;
+    }
+
+    @Override
+    public final String format(final Object obj) {
+      if (obj == null) {
+        return "null";
+      }
+      final Class<?> cls = obj.getClass();
+      try {
+        if (cls.isArray()) {
+          if (cls == byte[].class) {
+            return Arrays.toString((byte[]) obj);
+          } else if (cls == short[].class) {
+            return Arrays.toString((short[]) obj);
+          } else if (cls == int[].class) {
+            return Arrays.toString((int[]) obj);
+          } else if (cls == long[].class) {
+            return Arrays.toString((long[]) obj);
+          } else if (cls == char[].class) {
+            return Arrays.toString((char[]) obj);
+          } else if (cls == float[].class) {
+            return Arrays.toString((float[]) obj);
+          } else if (cls == double[].class) {
+            return Arrays.toString((double[]) obj);
+          } else if (cls == boolean[].class) {
+            return Arrays.toString((boolean[]) obj);
+          } else {
+            return Arrays.deepToString((Object[]) obj);
+          }
+        }
+        return obj.toString();
+      } catch (final Exception ex) {
+        throw handledEx(new TextFormatException(methodDesc(cls, "toString()") + " threw " + ex, ex));
+      }
     }
 
     @Override
@@ -90,7 +131,7 @@ public interface TextFormatter {
                                final Map<String, Object> replacements) {
       if (text == null) { throw new XtepsException("text arg is null"); }
       if (replacements == null) { throw new XtepsException("replacements arg is null"); }
-      if (text.isEmpty()) {
+      if (text.isEmpty() || replacements.isEmpty()) {
         return text;
       }
       final StringBuffer stringBuffer = new StringBuffer();
@@ -102,10 +143,10 @@ public interface TextFormatter {
           final Object replacementValue = replacements.get(replacementPointer);
           matcher.appendReplacement(
             stringBuffer,
-            Matcher.quoteReplacement(this.asString(
-              path.length == 1 ? replacementValue : extractValue(
-                path, replacementValue, this.fieldForceAccess, this.methodForceAccess
-              )
+            Matcher.quoteReplacement(this.format(
+              path.length == 1
+                ? replacementValue
+                : extractValue(path, replacementValue, this.fieldForceAccess, this.methodForceAccess)
             ))
           );
         }
@@ -114,48 +155,10 @@ public interface TextFormatter {
       return stringBuffer.toString();
     }
 
-    @Override
-    public final String asString(final Object obj) {
-      if (obj == null) {
-        return "null";
-      }
-      final Class<?> cls = obj.getClass();
-      if (cls.isArray()) {
-        if (cls == byte[].class) {
-          return Arrays.toString((byte[]) obj);
-        } else if (cls == short[].class) {
-          return Arrays.toString((short[]) obj);
-        } else if (cls == int[].class) {
-          return Arrays.toString((int[]) obj);
-        } else if (cls == long[].class) {
-          return Arrays.toString((long[]) obj);
-        } else if (cls == char[].class) {
-          return Arrays.toString((char[]) obj);
-        } else if (cls == float[].class) {
-          return Arrays.toString((float[]) obj);
-        } else if (cls == double[].class) {
-          return Arrays.toString((double[]) obj);
-        } else if (cls == boolean[].class) {
-          return Arrays.toString((boolean[]) obj);
-        } else {
-          try {
-            return Arrays.deepToString((Object[]) obj);
-          } catch (final Exception ex) {
-            throw new TextFormatException(methodDesc(cls, "toString()") + " threw " + ex, ex);
-          }
-        }
-      }
-      try {
-        return obj.toString();
-      } catch (final Exception ex) {
-        throw new TextFormatException(methodDesc(cls, "toString()") + " threw " + ex, ex);
-      }
-    }
-
-    private static Object extractValue(final String[] path,
-                                       final Object firstPartValue,
-                                       final boolean fieldForceAccess,
-                                       final boolean methodForceAccess) {
+    private Object extractValue(final String[] path,
+                                final Object firstPartValue,
+                                final boolean fieldForceAccess,
+                                final boolean methodForceAccess) {
       Object lastValue = firstPartValue;
       for (int idx = 1; idx < path.length; ++idx) {
         final String pathPart = path[idx];
@@ -170,32 +173,32 @@ public interface TextFormatter {
       return lastValue;
     }
 
-    private static Object containerValue(final Object obj,
-                                         final String pathPart) {
+    private Object containerValue(final Object obj,
+                                  final String pathPart) {
       final int pathPartLength = pathPart.length();
       if (pathPartLength < 3 || pathPart.indexOf('[') != 0 || pathPart.indexOf(']') != pathPartLength - 1) {
-        throw new TextFormatException("Incorrect element index " + pathPart);
+        throw handledEx(new TextFormatException("Incorrect element index " + pathPart));
       }
       final int index;
       try {
         index = Integer.parseInt(pathPart.substring(1, pathPartLength - 1));
       } catch (final Exception ex) {
-        throw new TextFormatException("Incorrect element index " + pathPart);
+        throw handledEx(new TextFormatException("Incorrect element index " + pathPart));
       }
       if (obj == null) {
-        throw new TextFormatException("Cannot get element of null");
+        throw handledEx(new TextFormatException("Cannot get element of null"));
       }
       if (obj.getClass().isArray()) {
         try {
           return Array.get(obj, index);
         } catch (final Exception ex) {
-          throw new TextFormatException("Cannot get array element by index " + index, ex);
+          throw handledEx(new TextFormatException("Cannot get array element by index " + index, ex));
         }
       } else if (obj instanceof List) {
         try {
           return ((List<?>) obj).get(index);
         } catch (final Exception ex) {
-          throw new TextFormatException("Cannot get List element by index " + index, ex);
+          throw handledEx(new TextFormatException("Cannot get List element by index " + index, ex));
         }
       } else if (obj instanceof Iterable) {
         final Iterator<?> iterator = ((Iterable<?>) obj).iterator();
@@ -206,45 +209,45 @@ public interface TextFormatter {
             iterator.next();
           }
         }
-        throw new TextFormatException("Cannot get Iterable element by index " + index);
+        throw handledEx(new TextFormatException("Cannot get Iterable element by index " + index));
       } else {
-        throw new TextFormatException("Cannot get element of " + obj.getClass());
+        throw handledEx(new TextFormatException("Cannot get element of " + obj.getClass()));
       }
     }
 
-    private static Object methodValue(final Object obj,
-                                      final String pathPart,
-                                      final boolean forceAccess) {
+    private Object methodValue(final Object obj,
+                               final String pathPart,
+                               final boolean forceAccess) {
       if (pathPart.length() < 3 || !pathPart.endsWith("()")) {
-        throw new TextFormatException("Incorrect method " + pathPart);
+        throw handledEx(new TextFormatException("Incorrect method " + pathPart));
       }
       if (obj == null) {
-        throw new TextFormatException(String.format("Cannot invoke %s method on null", pathPart));
+        throw handledEx(new TextFormatException(String.format("Cannot invoke %s method on null", pathPart)));
       }
       final Class<?> cls = obj.getClass();
       final Method method;
       try {
         method = findMethod(cls, pathPart.substring(0, pathPart.length() - 2), forceAccess);
       } catch (final Exception ex) {
-        throw new TextFormatException(String.format("Cannot get %s %s cause %s",
-          methodDesc(cls, pathPart), forceAccessDesc(forceAccess), ex), ex);
+        throw handledEx(new TextFormatException(String.format("Cannot get %s %s cause %s",
+          methodDesc(cls, pathPart), forceAccessDesc(forceAccess), ex), ex));
       }
       if (method == null) {
-        throw new TextFormatException(String.format("Cannot find %s %s",
-          methodDesc(cls, pathPart), forceAccessDesc(forceAccess)));
+        throw handledEx(new TextFormatException(String.format("Cannot find %s %s",
+          methodDesc(cls, pathPart), forceAccessDesc(forceAccess))));
       }
       if (method.getReturnType() == void.class) {
-        throw new TextFormatException(String.format("Return type of %s is void", methodDesc(cls, pathPart)));
+        throw handledEx(new TextFormatException(String.format("Return type of %s is void", methodDesc(cls, pathPart))));
       }
       try {
         return invokeMethod(obj, method, forceAccess);
       } catch (final InvocationTargetException ex) {
         Throwable targetEx = (targetEx = ex.getCause()) != null ? targetEx : ex;
-        throw new TextFormatException(String.format("%s %s threw %s",
-          methodDesc(cls, pathPart), forceAccessDesc(forceAccess), targetEx), targetEx);
+        throw handledEx(new TextFormatException(String.format("%s %s threw %s",
+          methodDesc(cls, pathPart), forceAccessDesc(forceAccess), targetEx), targetEx));
       } catch (final Exception ex) {
-        throw new TextFormatException(String.format("Cannot invoke %s %s cause %s",
-          methodDesc(cls, pathPart), forceAccessDesc(forceAccess), ex), ex);
+        throw handledEx(new TextFormatException(String.format("Cannot invoke %s %s cause %s",
+          methodDesc(cls, pathPart), forceAccessDesc(forceAccess), ex), ex));
       }
     }
 
@@ -266,8 +269,7 @@ public interface TextFormatter {
 
     private static Object invokeMethod(final Object obj,
                                        final Method method,
-                                       final boolean forceAccess)
-      throws InvocationTargetException, IllegalAccessException {
+                                       final boolean forceAccess) throws InvocationTargetException, IllegalAccessException {
       if (forceAccess) {
         try {
           return method.invoke(obj);
@@ -278,29 +280,29 @@ public interface TextFormatter {
       return method.invoke(obj);
     }
 
-    private static Object fieldValue(final Object obj,
-                                     final String pathPart,
-                                     final boolean forceAccess) {
+    private Object fieldValue(final Object obj,
+                              final String pathPart,
+                              final boolean forceAccess) {
       if (obj == null) {
-        throw new TextFormatException(String.format("Cannot get %s field value of null", pathPart));
+        throw handledEx(new TextFormatException(String.format("Cannot get %s field value of null", pathPart)));
       }
       final Class<?> cls = obj.getClass();
       final Field field;
       try {
         field = findField(cls, pathPart, forceAccess);
       } catch (final Exception ex) {
-        throw new TextFormatException(String.format("Cannot get %s cause %s",
-          fieldDesc(cls, pathPart), ex), ex);
+        throw handledEx(new TextFormatException(String.format("Cannot get %s cause %s",
+          fieldDesc(cls, pathPart), ex), ex));
       }
       if (field == null) {
-        throw new TextFormatException(String.format("Cannot find %s %s",
-          fieldDesc(cls, pathPart), forceAccessDesc(forceAccess)));
+        throw handledEx(new TextFormatException(String.format("Cannot find %s %s",
+          fieldDesc(cls, pathPart), forceAccessDesc(forceAccess))));
       }
       try {
         return getFieldValue(obj, field, forceAccess);
       } catch (final Exception ex) {
-        throw new TextFormatException(String.format("Cannot get %s value %s cause %s",
-          fieldDesc(cls, pathPart), forceAccessDesc(forceAccess), ex), ex);
+        throw handledEx(new TextFormatException(String.format("Cannot get %s value %s cause %s",
+          fieldDesc(cls, pathPart), forceAccessDesc(forceAccess), ex), ex));
       }
     }
 
@@ -322,8 +324,7 @@ public interface TextFormatter {
 
     private static Object getFieldValue(final Object obj,
                                         final Field field,
-                                        final boolean forceAccess)
-      throws IllegalAccessException {
+                                        final boolean forceAccess) throws IllegalAccessException {
       if (forceAccess) {
         try {
           return field.get(obj);
@@ -332,6 +333,11 @@ public interface TextFormatter {
         }
       }
       return field.get(obj);
+    }
+
+    private TextFormatException handledEx(final TextFormatException exception) {
+      this.exceptionHandler.handle(exception);
+      return exception;
     }
 
     private static String methodDesc(final Class<?> cls, final String method) {
@@ -344,6 +350,25 @@ public interface TextFormatter {
 
     private static String forceAccessDesc(final boolean forceAccess) {
       return forceAccess ? "with force access" : "without force access";
+    }
+  }
+
+  class Fake implements TextFormatter {
+
+    public Fake() {
+    }
+
+    @Override
+    public final String format(final Object obj) {
+      return Objects.toString(obj);
+    }
+
+    @Override
+    public final String format(final String text,
+                               final Map<String, Object> replacements) {
+      if (text == null) { throw new XtepsException("text arg is null"); }
+      if (replacements == null) { throw new XtepsException("replacements arg is null"); }
+      return text;
     }
   }
 }

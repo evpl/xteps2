@@ -15,8 +15,6 @@
  */
 package com.plugatar.xteps2.core.chain;
 
-import com.plugatar.xteps2.core.HookContainer;
-import com.plugatar.xteps2.core.StepExecutor;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.chain.base.BaseBiCtxSC;
 import com.plugatar.xteps2.core.function.ThBiConsumer;
@@ -24,14 +22,8 @@ import com.plugatar.xteps2.core.function.ThBiFunction;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
 
-import static com.plugatar.xteps2.core.HookPriority.NORM_HOOK_PRIORITY;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.checkPriorityArg;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.currentStepExecutor;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.currentTestHookContainer;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.newChainHookContainer;
-
 /**
- * Bi context step chain.
+ * Bi context step context.
  *
  * @param <C1> the type of the first context
  * @param <C2> the type of the second context
@@ -42,8 +34,8 @@ public interface BiCtxSC<C1, C2> extends BaseBiCtxSC<C1, C2, BiCtxSC<C1, C2>> {
   <R> MemTriCtxSC<R, C1, C2, BiCtxSC<C1, C2>> with(ThBiFunction<? super C1, ? super C2, ? extends R, ?> action);
 
   @Override
-  <R1, R2> BiCtxSC<R1, R2> map(final ThBiFunction<? super C1, ? super C2, ? extends R1, ?> action1,
-                               final ThBiFunction<? super C1, ? super C2, ? extends R2, ?> action2);
+  <R1, R2> MemBiCtxSC<R1, R2, BiCtxSC<C1, C2>> map(final ThBiFunction<? super C1, ? super C2, ? extends R1, ?> action1,
+                                                   final ThBiFunction<? super C1, ? super C2, ? extends R2, ?> action2);
 
   /**
    * Default {@code BiCtxSC} implementation.
@@ -52,8 +44,6 @@ public interface BiCtxSC<C1, C2> extends BaseBiCtxSC<C1, C2, BiCtxSC<C1, C2>> {
    * @param <C2> the type of the second context
    */
   class Of<C1, C2> implements BiCtxSC<C1, C2> {
-    private final StepExecutor executor;
-    private final HookContainer hooks;
     private final C1 context1;
     private final C2 context2;
 
@@ -62,82 +52,55 @@ public interface BiCtxSC<C1, C2> extends BaseBiCtxSC<C1, C2, BiCtxSC<C1, C2>> {
      *
      * @param context1 the first context
      * @param context2 the second context
-     * @throws XtepsException if Xteps configuration is incorrect
      */
     public Of(final C1 context1,
               final C2 context2) {
-      this(currentStepExecutor(), newChainHookContainer(), context1, context2);
-    }
-
-    /**
-     * Ctor.
-     *
-     * @param executor the step executor
-     * @param hooks    the hooks container
-     * @param context1 the first context
-     * @param context2 the second context
-     */
-    public Of(final StepExecutor executor,
-              final HookContainer hooks,
-              final C1 context1,
-              final C2 context2) {
-      if (executor == null) { throw new XtepsException("executor arg is null"); }
-      if (hooks == null) { throw new XtepsException("hooks arg is null"); }
-      this.executor = executor;
-      this.hooks = hooks;
       this.context1 = context1;
       this.context2 = context2;
     }
 
     @Override
-    public final BiCtxSC<C1, C2> next(final ThBiConsumer<? super C1, ? super C2, ?> action) {
+    public final BiCtxSC<C1, C2> exec(final ThBiConsumer<? super C1, ? super C2, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      this.executor.exec(this.hooks, () -> {
-        action.accept(this.context1, this.context2);
-        return null;
-      });
+      ThBiConsumer.unchecked(action).accept(this.context1, this.context2);
       return this;
     }
 
     @Override
     public final <R> MemTriCtxSC<R, C1, C2, BiCtxSC<C1, C2>> with(final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      return new MemTriCtxSC.Of<>(this.executor, this.hooks, this.executor.exec(this.hooks, () -> action.apply(this.context1, this.context2)),
+      return new MemTriCtxSC.Of<>(ThBiFunction.unchecked(action).apply(this.context1, this.context2),
         this.context1, this.context2, this);
     }
 
     @Override
     public final <R> R res(final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      return this.executor.exec(this.hooks, () -> action.apply(this.context1, this.context2));
+      return ThBiFunction.unchecked(action).apply(this.context1, this.context2);
     }
 
     @Override
-    public final BiCtxSC<C1, C2> chain(final ThConsumer<? super BiCtxSC<C1, C2>, ?> action) {
+    public final BiCtxSC<C1, C2> it(final ThConsumer<? super BiCtxSC<C1, C2>, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      this.executor.exec(this.hooks, () -> {
-        action.accept(this);
-        return null;
-      });
+      ThConsumer.unchecked(action).accept(this);
       return this;
     }
 
     @Override
-    public final <R> R chainRes(final ThFunction<? super BiCtxSC<C1, C2>, ? extends R, ?> action) {
+    public final <R> R itRes(final ThFunction<? super BiCtxSC<C1, C2>, ? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      return this.executor.exec(this.hooks, () -> action.apply(this));
+      return ThFunction.unchecked(action).apply(this);
     }
 
     @Override
-    public final <R1, R2> BiCtxSC<R1, R2> map(final ThBiFunction<? super C1, ? super C2, ? extends R1, ?> action1,
-                                              final ThBiFunction<? super C1, ? super C2, ? extends R2, ?> action2) {
+    public final <R1, R2> MemBiCtxSC<R1, R2, BiCtxSC<C1, C2>> map(final ThBiFunction<? super C1, ? super C2, ? extends R1, ?> action1,
+                                                                  final ThBiFunction<? super C1, ? super C2, ? extends R2, ?> action2) {
       if (action1 == null) { throw new XtepsException("action1 arg is null"); }
       if (action2 == null) { throw new XtepsException("action2 arg is null"); }
-      return new BiCtxSC.Of<>(
-        this.executor,
-        this.hooks,
-        this.executor.exec(this.hooks, () -> action1.apply(this.context1, this.context2)),
-        this.executor.exec(this.hooks, () -> action2.apply(this.context1, this.context2))
+      return new MemBiCtxSC.Of<>(
+        ThBiFunction.unchecked(action1).apply(this.context1, this.context2),
+        ThBiFunction.unchecked(action2).apply(this.context1, this.context2),
+        this
       );
     }
 
@@ -153,41 +116,7 @@ public interface BiCtxSC<C1, C2> extends BaseBiCtxSC<C1, C2, BiCtxSC<C1, C2>> {
 
     @Override
     public final MemNoCtxSC<BiCtxSC<C1, C2>> noContext() {
-      return new MemNoCtxSC.Of<>(this.executor, this.hooks, this);
-    }
-
-    @Override
-    public final BiCtxSC<C1, C2> callChainHooks() {
-      this.hooks.callHooks();
-      return this;
-    }
-
-    @Override
-    public final BiCtxSC<C1, C2> chainHook(final ThBiConsumer<? super C1, ? super C2, ?> action) {
-      return this.chainHook(NORM_HOOK_PRIORITY, action);
-    }
-
-    @Override
-    public final BiCtxSC<C1, C2> chainHook(final int priority,
-                                           final ThBiConsumer<? super C1, ? super C2, ?> action) {
-      if (action == null) { throw new XtepsException("action arg is null"); }
-      checkPriorityArg(priority);
-      this.hooks.addHook(priority, () -> action.accept(this.context1, this.context2));
-      return this;
-    }
-
-    @Override
-    public final BiCtxSC<C1, C2> testHook(final ThBiConsumer<? super C1, ? super C2, ?> action) {
-      return this.testHook(NORM_HOOK_PRIORITY, action);
-    }
-
-    @Override
-    public final BiCtxSC<C1, C2> testHook(final int priority,
-                                          final ThBiConsumer<? super C1, ? super C2, ?> action) {
-      if (action == null) { throw new XtepsException("action arg is null"); }
-      checkPriorityArg(priority);
-      currentTestHookContainer().addHook(priority, () -> action.accept(this.context1, this.context2));
-      return this;
+      return new MemNoCtxSC.Of<>(this);
     }
   }
 }

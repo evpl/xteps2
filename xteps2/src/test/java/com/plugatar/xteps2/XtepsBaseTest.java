@@ -33,7 +33,7 @@ final class XtepsBaseTest {
 
   @BeforeAll
   static void beforeAll() {
-    System.setProperty("xteps.listeners.list", "com.plugatar.xteps2.StaticStepListener");
+    System.setProperty("xteps.listener.list", "com.plugatar.xteps2.StaticStepListener");
   }
 
   @Test
@@ -42,13 +42,10 @@ final class XtepsBaseTest {
     final Object stepResult = new Object();
     final ThSupplier<Object, RuntimeException> stepAction = () -> stepResult;
 
-    XtepsBase.stepExecutor().report(stepArtifacts, stepAction);
+    XtepsBase.stepReporter().executeStep(stepArtifacts, stepAction);
     /* stepStarted method */
-    final String stepStartedUuid = StaticStepListener.stepStartedUUID();
-    assertThat(stepStartedUuid).matches(uuidPattern());
     assertThat(StaticStepListener.stepStartedArtifact()).isSameAs(stepArtifacts);
     /* stepPassed method */
-    assertThat(StaticStepListener.stepPassedUUID()).isSameAs(stepStartedUuid);
     StaticStepListener.clear();
   }
 
@@ -58,14 +55,11 @@ final class XtepsBaseTest {
     final RuntimeException stepException = new RuntimeException();
     final ThSupplier<Object, RuntimeException> stepAction = () -> { throw stepException; };
 
-    assertThatCode(() -> XtepsBase.stepExecutor().report(stepArtifacts, stepAction))
+    assertThatCode(() -> XtepsBase.stepReporter().executeStep(stepArtifacts, stepAction))
       .isSameAs(stepException);
     /* stepStarted method */
-    final String stepStartedUuid = StaticStepListener.stepStartedUUID();
-    assertThat(stepStartedUuid).matches(uuidPattern());
     assertThat(StaticStepListener.stepStartedArtifact()).isSameAs(stepArtifacts);
     /* stepFailed method */
-    assertThat(StaticStepListener.stepFailedUUID()).isSameAs(stepStartedUuid);
     assertThat(StaticStepListener.stepFailedException()).isSameAs(stepException);
     StaticStepListener.clear();
   }

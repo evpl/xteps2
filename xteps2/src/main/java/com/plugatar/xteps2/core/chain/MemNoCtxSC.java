@@ -15,29 +15,21 @@
  */
 package com.plugatar.xteps2.core.chain;
 
-import com.plugatar.xteps2.core.HookContainer;
-import com.plugatar.xteps2.core.StepExecutor;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.chain.base.BaseNoCtxSC;
 import com.plugatar.xteps2.core.chain.base.MemSC;
-import com.plugatar.xteps2.core.chain.base.StepChain;
+import com.plugatar.xteps2.core.chain.base.StepContext;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
 import com.plugatar.xteps2.core.function.ThRunnable;
 import com.plugatar.xteps2.core.function.ThSupplier;
 
-import static com.plugatar.xteps2.core.HookPriority.NORM_HOOK_PRIORITY;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.checkPriorityArg;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.currentStepExecutor;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.currentTestHookContainer;
-import static com.plugatar.xteps2.core.chain.StepChainUtils.newChainHookContainer;
-
 /**
- * Memorizing no context step chain.
+ * Memorizing no context step context.
  *
- * @param <P> the type of the previous step chain
+ * @param <P> the type of the previous step context
  */
-public interface MemNoCtxSC<P extends StepChain<?>> extends
+public interface MemNoCtxSC<P extends StepContext<?>> extends
   BaseNoCtxSC<MemNoCtxSC<P>>,
   MemSC<P, NoCtxSC> {
 
@@ -47,76 +39,50 @@ public interface MemNoCtxSC<P extends StepChain<?>> extends
   /**
    * Default {@code MemNoCtxSC} implementation.
    *
-   * @param <P> the type of the previous step chain
+   * @param <P> the type of the previous step context
    */
-  class Of<P extends StepChain<?>> implements MemNoCtxSC<P> {
-    private final StepExecutor executor;
-    private final HookContainer hooks;
+  class Of<P extends StepContext<?>> implements MemNoCtxSC<P> {
     private final P previous;
 
     /**
      * Ctor.
      *
-     * @param previous the previous step chain
-     * @throws XtepsException if Xteps configuration is incorrect
+     * @param previous the previous step context
      */
     public Of(final P previous) {
-      this(currentStepExecutor(), newChainHookContainer(), previous);
-    }
-
-    /**
-     * Ctor.
-     *
-     * @param executor the step executor
-     * @param hooks    the hooks container
-     * @param previous the previous step chain
-     */
-    public Of(final StepExecutor executor,
-              final HookContainer hooks,
-              final P previous) {
-      if (executor == null) { throw new XtepsException("executor arg is null"); }
-      if (hooks == null) { throw new XtepsException("hooks arg is null"); }
-      this.executor = executor;
-      this.hooks = hooks;
       this.previous = previous;
     }
 
     @Override
-    public final MemNoCtxSC<P> next(final ThRunnable<?> action) {
+    public final MemNoCtxSC<P> exec(final ThRunnable<?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      this.executor.exec(this.hooks, () -> {
-        action.run();
-        return null;
-      });
+      ThRunnable.unchecked(action).run();
       return this;
     }
 
     @Override
     public final <R> MemCtxSC<R, P> with(final ThSupplier<? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      return new MemCtxSC.Of<>(this.executor, this.hooks, this.executor.exec(this.hooks, action), this.previous);
+      return new MemCtxSC.Of<>(ThSupplier.unchecked(action).get(), this.previous);
     }
 
     @Override
     public final <R> R res(final ThSupplier<? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      return this.executor.exec(this.hooks, action);
+      return ThSupplier.unchecked(action).get();
     }
 
     @Override
-    public final MemNoCtxSC<P> chain(final ThConsumer<? super MemNoCtxSC<P>, ?> action) {
+    public final MemNoCtxSC<P> it(final ThConsumer<? super MemNoCtxSC<P>, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      this.executor.exec(this.hooks, () -> {
-        action.accept(this);
-        return null;
-      });
+      ThConsumer.unchecked(action).accept(this);
       return this;
     }
 
     @Override
-    public final <R> R chainRes(final ThFunction<? super MemNoCtxSC<P>, ? extends R, ?> action) {
+    public final <R> R itRes(final ThFunction<? super MemNoCtxSC<P>, ? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      return this.executor.exec(this.hooks, () -> action.apply(this));
+      return ThFunction.unchecked(action).apply(this);
     }
 
     @Override
@@ -126,41 +92,7 @@ public interface MemNoCtxSC<P extends StepChain<?>> extends
 
     @Override
     public final NoCtxSC forget() {
-      return new NoCtxSC.Of(this.executor, this.hooks);
-    }
-
-    @Override
-    public final MemNoCtxSC<P> callChainHooks() {
-      this.hooks.callHooks();
-      return this;
-    }
-
-    @Override
-    public final MemNoCtxSC<P> chainHook(final ThRunnable<?> action) {
-      return this.chainHook(NORM_HOOK_PRIORITY, action);
-    }
-
-    @Override
-    public final MemNoCtxSC<P> chainHook(final int priority,
-                                         final ThRunnable<?> action) {
-      if (action == null) { throw new XtepsException("action arg is null"); }
-      checkPriorityArg(priority);
-      this.hooks.addHook(priority, action);
-      return this;
-    }
-
-    @Override
-    public final MemNoCtxSC<P> testHook(final ThRunnable<?> action) {
-      return this.testHook(NORM_HOOK_PRIORITY, action);
-    }
-
-    @Override
-    public final MemNoCtxSC<P> testHook(final int priority,
-                                        final ThRunnable<?> action) {
-      if (action == null) { throw new XtepsException("action arg is null"); }
-      checkPriorityArg(priority);
-      currentTestHookContainer().addHook(priority, action);
-      return this;
+      return NoCtxSC.instance();
     }
   }
 }

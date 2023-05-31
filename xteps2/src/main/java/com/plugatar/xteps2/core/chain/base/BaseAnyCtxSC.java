@@ -18,16 +18,16 @@ package com.plugatar.xteps2.core.chain.base;
 import com.plugatar.xteps2.core.chain.MemNoCtxSC;
 
 /**
- * Base any context step chain.
+ * Base any context step context.
  *
- * @param <S> the type of the step chain implementing {@code BaseAnyCtxSC}
+ * @param <S> the type of the step context implementing {@code BaseAnyCtxSC}
  */
-public interface BaseAnyCtxSC<S extends BaseAnyCtxSC<S>> extends StepChain<S> {
+public interface BaseAnyCtxSC<S extends BaseAnyCtxSC<S>> extends StepContext<S> {
 
   /**
-   * Returns no context step chain.
+   * Returns no context step context.
    *
-   * @return no context step chain
+   * @return no context step context
    */
   MemNoCtxSC<S> noContext();
 }

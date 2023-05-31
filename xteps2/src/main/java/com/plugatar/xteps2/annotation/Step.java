@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
  * <tr><td> <i>this</i>      </td><td> Returns the currently executing object, only for non static methods. </td></tr>
  * </table>
  * Step {@code name} example:
- * <br><i>Step {class.getSimpleName()} {method.getName()} with args: {arg1}, {arg2.getArray()[10]}</i>
+ * <br><i>Step {class.getSimpleName()} {method.getName()} with args: {arg1}, {arg2.getArray().[10]}</i>
  *
  * @see Param
  * @see Artifact
@@ -65,12 +65,19 @@ public @interface Step {
   String name() default "";
 
   /**
-   * The step keyword.
+   * The step keyword. Overridden by {@link #keywordStr()} when specified.
    *
    * @return step keyword
    * @see Keywords
    */
   Keywords keyword() default Keywords.NONE;
+
+  /**
+   * The custom step keyword. Overrides {@link #keyword()} when specified.
+   *
+   * @return custom step keyword
+   */
+  String keywordStr() default "";
 
   /**
    * The step description.
@@ -96,9 +103,9 @@ public @interface Step {
   Artifact[] artifacts() default {};
 
   /**
-   * Ignore default step flag.
+   * Ignore {@link DefaultStep} flag.
    *
-   * @return ignore default step flag
+   * @return ignore {@link DefaultStep} flag
    * @see DefaultStep
    */
   boolean ignoreDefault() default false;

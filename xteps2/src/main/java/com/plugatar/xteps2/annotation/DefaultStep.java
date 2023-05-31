@@ -50,12 +50,19 @@ public @interface DefaultStep {
   String name() default "";
 
   /**
-   * The step keyword.
+   * The step keyword. Overridden by {@link #keywordStr()} when specified.
    *
    * @return step keyword
    * @see Keywords
    */
   Keywords keyword() default Keywords.NONE;
+
+  /**
+   * The custom step keyword. Overrides {@link #keyword()} when specified.
+   *
+   * @return custom step keyword
+   */
+  String keywordStr() default "";
 
   /**
    * The step description.

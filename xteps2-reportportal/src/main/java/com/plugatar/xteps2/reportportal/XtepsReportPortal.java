@@ -17,17 +17,16 @@ package com.plugatar.xteps2.reportportal;
 
 import com.epam.reportportal.service.Launch;
 import com.epam.reportportal.service.step.StepRequestUtils;
+import com.epam.reportportal.utils.ParameterUtils;
 import com.epam.ta.reportportal.ws.model.ParameterResource;
 import com.epam.ta.reportportal.ws.model.StartTestItemRQ;
+import com.plugatar.xteps2.XtepsBase;
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
-import com.plugatar.xteps2.core.XtepsException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.plugatar.xteps2.XtepsBase.textFormatter;
 
 /**
  * {@link StepListener} implementation for Report Portal.
@@ -39,36 +38,20 @@ public class XtepsReportPortal implements StepListener {
    * Zero-argument public ctor.
    */
   public XtepsReportPortal() {
-    this("Step");
-  }
-
-  /**
-   * Ctor.
-   *
-   * @param emptyNameReplacement the empty step name replacement
-   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
-   */
-  public XtepsReportPortal(final String emptyNameReplacement) {
-    if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }
-    if (emptyNameReplacement.isEmpty()) { throw new XtepsException("emptyNameReplacement arg is empty"); }
-    this.emptyNameReplacement = emptyNameReplacement;
+    final Map<String, String> properties = XtepsBase.properties();
+    this.emptyNameReplacement = properties.getOrDefault("xteps.reportportal.emptyNameReplacement", "Step");
   }
 
   @Override
-  public final void stepStarted(final String uuid,
-                                final Map<String, ?> artifacts) {
+  public final void stepStarted(final Map<String, ?> artifacts) {
     final Launch launch = Launch.currentLaunch();
     if (launch != null) {
       final Keyword keyword = Utils.keyword(artifacts);
       final String name = Utils.name(artifacts);
       final String desc = Utils.desc(artifacts);
       final Map<String, Object> params = Utils.params(artifacts);
-      final Map<String, Object> replacements = Utils.replacements(artifacts);
       final StartTestItemRQ startTestItemRQ = StepRequestUtils.buildStartStepRequest(
-        textFormatter().format(
-          Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
-          replacements
-        ),
+        Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
         desc
       );
       if (!params.isEmpty()) {
@@ -76,7 +59,7 @@ public class XtepsReportPortal implements StepListener {
         params.forEach((paramName, paramValue) -> {
           final ParameterResource param = new ParameterResource();
           param.setKey(paramName);
-          param.setValue(textFormatter().asString(paramValue));
+          param.setValue(paramValue == null ? ParameterUtils.NULL_VALUE : XtepsBase.textFormatter().format(paramValue));
           rpParams.add(param);
         });
         startTestItemRQ.setParameters(rpParams);
@@ -86,7 +69,7 @@ public class XtepsReportPortal implements StepListener {
   }
 
   @Override
-  public final void stepPassed(final String uuid) {
+  public final void stepPassed() {
     final Launch launch = Launch.currentLaunch();
     if (launch != null) {
       launch.getStepReporter().finishNestedStep();
@@ -94,8 +77,7 @@ public class XtepsReportPortal implements StepListener {
   }
 
   @Override
-  public final void stepFailed(final String uuid,
-                               final Throwable exception) {
+  public final void stepFailed(final Throwable exception) {
     final Launch launch = Launch.currentLaunch();
     if (launch != null) {
       launch.getStepReporter().finishNestedStep(exception);

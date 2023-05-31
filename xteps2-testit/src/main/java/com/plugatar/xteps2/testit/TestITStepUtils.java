@@ -15,7 +15,6 @@
  */
 package com.plugatar.xteps2.testit;
 
-import com.plugatar.xteps2.XtepsBase;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
@@ -103,8 +102,7 @@ public final class TestITStepUtils {
    */
   public static <T> T stepParam(final String name,
                                 final T value) {
-    Adapter.getAdapterManager().updateStep(stepResult ->
-      stepResult.getParameters().put(name, XtepsBase.textFormatter().asString(value)));
+    Adapter.getAdapterManager().updateStep(stepResult -> stepResult.getParameters().put(name, String.valueOf(value)));
     return value;
   }
 

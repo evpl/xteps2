@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -37,7 +36,7 @@ final class StepAspectsTest {
 
   @BeforeAll
   static void beforeAll() {
-    System.setProperty("xteps.listeners.list", "com.plugatar.xteps2.StaticStepListener");
+    System.setProperty("xteps.listener.list", "com.plugatar.xteps2.StaticStepListener");
   }
 
   @Test
@@ -46,9 +45,7 @@ final class StepAspectsTest {
     classWithDefaultStep.nonStaticMethod(1, "value");
 
     /* stepStarted method */
-    final String stepStartedUuid = StaticStepListener.stepStartedUUID();
     final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
-    assertThat(stepStartedUuid).matches(uuidPattern());
     assertThat(StepListener.Utils.name(artifacts)).isEqualTo("Custom name");
     assertThat(StepListener.Utils.desc(artifacts)).isEqualTo("Default desc");
     assertThat(StepListener.Utils.params(artifacts)).containsExactly(
@@ -73,7 +70,6 @@ final class StepAspectsTest {
     );
 
     /* stepPassed method */
-    assertThat(StaticStepListener.stepPassedUUID()).isSameAs(stepStartedUuid);
     StaticStepListener.clear();
   }
 
@@ -82,9 +78,7 @@ final class StepAspectsTest {
     ClassWithDefaultStep.staticMethod(1, "value");
 
     /* stepStarted method */
-    final String stepStartedUuid = StaticStepListener.stepStartedUUID();
     final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
-    assertThat(stepStartedUuid).matches(uuidPattern());
     assertThat(StepListener.Utils.name(artifacts)).isEqualTo("Custom name");
     assertThat(StepListener.Utils.desc(artifacts)).isEqualTo("Default desc");
     assertThat(StepListener.Utils.params(artifacts)).containsExactly(
@@ -108,7 +102,6 @@ final class StepAspectsTest {
     );
 
     /* stepPassed method */
-    assertThat(StaticStepListener.stepPassedUUID()).isSameAs(stepStartedUuid);
     StaticStepListener.clear();
   }
 
@@ -117,9 +110,7 @@ final class StepAspectsTest {
     new ClassWithDefaultStep(1, "value");
 
     /* stepStarted method */
-    final String stepStartedUuid = StaticStepListener.stepStartedUUID();
     final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
-    assertThat(stepStartedUuid).matches(uuidPattern());
     assertThat(StepListener.Utils.name(artifacts)).isEqualTo("Custom name");
     assertThat(StepListener.Utils.desc(artifacts)).isEqualTo("Default desc");
     assertThat(StepListener.Utils.params(artifacts)).containsExactly(
@@ -143,12 +134,7 @@ final class StepAspectsTest {
     );
 
     /* stepPassed method */
-    assertThat(StaticStepListener.stepPassedUUID()).isSameAs(stepStartedUuid);
     StaticStepListener.clear();
-  }
-
-  private static Pattern uuidPattern() {
-    return Pattern.compile("^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$");
   }
 
   @DefaultStep(

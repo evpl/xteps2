@@ -70,7 +70,7 @@
     <dependency>
       <groupId>io.qameta.allure</groupId>
       <artifactId>allure-java-commons</artifactId>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <!-- test dependencies -->
     <dependency>

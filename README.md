@@ -1,8 +1,15 @@
 # Xteps2
 
-[![Maven Central](https://img.shields.io/badge/maven--central-0.1-brightgreen?style=flat)](https://search.maven.org/search?q=com.plugatar.xteps2)
-[![Javadoc](https://img.shields.io/badge/javadoc-0.1-blue?style=flat)](https://javadoc.io/doc/com.plugatar.xteps2)
+[![Maven Central](https://img.shields.io/badge/maven--central-0.2-brightgreen?style=flat)](https://search.maven.org/search?q=com.plugatar.xteps2)
+[![Javadoc](https://img.shields.io/badge/javadoc-0.2-blue?style=flat)](https://javadoc.io/doc/com.plugatar.xteps2)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/evpl/xteps2/tests.yml)
-[![Hits-of-Code](https://hitsofcode.com/github/evpl/xteps2?branch=main)](https://hitsofcode.com/github/evpl/xteps2/view?branch=main)
-![Lines of code](https://img.shields.io/tokei/lines/github/evpl/xteps2?label=Total%20lines)
+
+| Module                 | Maven central                                                                                                                                                                         | Javadoc                                                                                                                                    |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `xteps2`               | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://search.maven.org/search?q=g:com.plugatar.xteps2%20AND%20a:xteps2)              | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2)              |
+| `xteps2-allure`        | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://search.maven.org/search?q=g:com.plugatar.xteps2%20AND%20a:xteps2-allure)       | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-allure)       |
+| `xteps2-extentreports` | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://search.maven.org/search?q=g:com.plugatar.xteps2%20AND%20a:xteps2-allure)       | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-allure)       |
+| `xteps2-qase`          | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://search.maven.org/search?q=g:com.plugatar.xteps2%20AND%20a:xteps2-qase)         | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-qase)         |
+| `xteps2-reportportal`  | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://search.maven.org/search?q=g:com.plugatar.xteps2%20AND%20a:xteps2-reportportal) | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-reportportal) |
+| `xteps2-testit`        | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://search.maven.org/search?q=g:com.plugatar.xteps2%20AND%20a:xteps2-testit)       | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-testit)       |

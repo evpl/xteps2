@@ -15,40 +15,39 @@
  */
 package com.plugatar.xteps2.core.chain.base;
 
-import com.plugatar.xteps2.core.HookPriority;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
 
 /**
- * Base context step chain.
+ * Base single context step context.
  *
  * @param <C> the type of the context
- * @param <S> the type of the step chain implementing {@code BaseCtxSC}
+ * @param <S> the type of the step context implementing {@code BaseCtxSC}
  */
-public interface BaseCtxSC<C, S extends BaseCtxSC<C, S>> extends StepChain<S>, BaseAnyCtxSC<S> {
+public interface BaseCtxSC<C, S extends BaseCtxSC<C, S>> extends StepContext<S>, BaseAnyCtxSC<S> {
 
   /**
-   * Performs given action.
+   * Executes given action.
    *
    * @param action the action
-   * @return this step chain
+   * @return this step context
    * @throws XtepsException if {@code action} is null
    */
-  S next(ThConsumer<? super C, ?> action);
+  S exec(ThConsumer<? super C, ?> action);
 
   /**
-   * Performs given action and returns new context step chain.
+   * Executes given action and returns new context step context.
    *
    * @param action the action
    * @param <R>    the type of the new context
-   * @return new context step chain
+   * @return new context step context
    * @throws XtepsException if {@code action} is null
    */
   <R> BaseBiCtxSC<R, C, ?> with(ThFunction<? super C, ? extends R, ?> action);
 
   /**
-   * Performs given action and returns action result.
+   * Executes given action and returns action result.
    *
    * @param action the action
    * @param <R>    the type of the result
@@ -58,11 +57,11 @@ public interface BaseCtxSC<C, S extends BaseCtxSC<C, S>> extends StepChain<S>, B
   <R> R res(ThFunction<? super C, ? extends R, ?> action);
 
   /**
-   * Performs given action and returns new context step chain.
+   * Executes given action and returns new context step context.
    *
    * @param action the action
    * @param <R>    the type of the new context
-   * @return new context step chain
+   * @return new context step context
    * @throws XtepsException if {@code action} is null
    */
   <R> BaseCtxSC<R, ?> map(final ThFunction<? super C, ? extends R, ?> action);
@@ -73,52 +72,4 @@ public interface BaseCtxSC<C, S extends BaseCtxSC<C, S>> extends StepChain<S>, B
    * @return the context
    */
   C context();
-
-  /**
-   * Adds given hook to this steps chain.
-   *
-   * @param action the action
-   * @return this step chain
-   * @throws XtepsException if {@code action} is null
-   */
-  S chainHook(ThConsumer<? super C, ?> action);
-
-  /**
-   * Adds given hook with given priority to this steps chain.
-   *
-   * @param priority the priority
-   * @param action   the action
-   * @return this step chain
-   * @throws XtepsException if {@code action} is null
-   *                        or if {@code priority} is not in the range {@link HookPriority#MIN_HOOK_PRIORITY} to
-   *                        {@link HookPriority#MAX_HOOK_PRIORITY}
-   */
-  S chainHook(int priority,
-              ThConsumer<? super C, ?> action);
-
-  /**
-   * Adds given hook for the current test.
-   *
-   * @param action the action
-   * @return this step chain
-   * @throws XtepsException if {@code TestHookContainer} implementation not found
-   *                        or if current test not found
-   *                        or if {@code action} is null
-   */
-  S testHook(ThConsumer<? super C, ?> action);
-
-  /**
-   * Adds given hook with given priority for the current test.
-   *
-   * @param priority the priority
-   * @param action   the action
-   * @return this step chain
-   * @throws XtepsException if {@code TestHookContainer} implementation not found
-   *                        or if current test not found
-   *                        or if {@code action} is null
-   *                        or if {@code priority} is not in the range {@link HookPriority#MIN_HOOK_PRIORITY} to
-   *                        {@link HookPriority#MAX_HOOK_PRIORITY}
-   */
-  S testHook(int priority,
-             ThConsumer<? super C, ?> action);
 }

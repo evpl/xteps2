@@ -15,16 +15,14 @@
  */
 package com.plugatar.xteps2.qase;
 
+import com.plugatar.xteps2.XtepsBase;
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
-import com.plugatar.xteps2.core.XtepsException;
 import io.qase.api.StepStorage;
 import io.qase.api.utils.IntegrationUtils;
 import io.qase.client.model.ResultCreateStepsInner;
 
 import java.util.Map;
-
-import static com.plugatar.xteps2.XtepsBase.textFormatter;
 
 /**
  * {@link StepListener} implementation for Qase.
@@ -36,46 +34,29 @@ public class XtepsQase implements StepListener {
    * Zero-argument public ctor.
    */
   public XtepsQase() {
-    this("Step");
-  }
-
-  /**
-   * Ctor.
-   *
-   * @param emptyNameReplacement the empty step name replacement
-   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
-   */
-  public XtepsQase(final String emptyNameReplacement) {
-    if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }
-    if (emptyNameReplacement.isEmpty()) { throw new XtepsException("emptyNameReplacement arg is empty"); }
-    this.emptyNameReplacement = emptyNameReplacement;
+    final Map<String, String> properties = XtepsBase.properties();
+    this.emptyNameReplacement = properties.getOrDefault("xteps.qase.emptyNameReplacement", "Step");
   }
 
   @Override
-  public final void stepStarted(final String uuid,
-                                final Map<String, ?> artifacts) {
+  public final void stepStarted(final Map<String, ?> artifacts) {
     final Keyword keyword = Utils.keyword(artifacts);
     final String name = Utils.name(artifacts);
     final String desc = Utils.desc(artifacts);
-    final Map<String, Object> replacements = Utils.replacements(artifacts);
     StepStorage.startStep();
     StepStorage.getCurrentStep()
-      .action(textFormatter().format(
-        Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
-        replacements
-      ))
+      .action(Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement))
       .comment(desc);
   }
 
   @Override
-  public final void stepPassed(final String uuid) {
+  public final void stepPassed() {
     StepStorage.getCurrentStep().status(ResultCreateStepsInner.StatusEnum.PASSED);
     StepStorage.stopStep();
   }
 
   @Override
-  public final void stepFailed(final String uuid,
-                               final Throwable exception) {
+  public final void stepFailed(final Throwable exception) {
     StepStorage.getCurrentStep()
       .status(ResultCreateStepsInner.StatusEnum.FAILED)
       .addAttachmentsItem(IntegrationUtils.getStacktrace(exception));

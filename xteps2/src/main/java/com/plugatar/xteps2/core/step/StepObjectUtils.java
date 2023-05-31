@@ -19,14 +19,16 @@ import com.plugatar.xteps2.Artifacts;
 import com.plugatar.xteps2.Keywords;
 import com.plugatar.xteps2.XtepsBase;
 import com.plugatar.xteps2.core.Keyword;
-import com.plugatar.xteps2.core.StepExecutor;
+import com.plugatar.xteps2.core.StepReporter;
 import com.plugatar.xteps2.core.XtepsException;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 final class StepObjectUtils {
   static final String EMPTY_STRING = "";
+  static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
   private StepObjectUtils() {
   }
@@ -35,8 +37,8 @@ final class StepObjectUtils {
     return Keywords.NONE;
   }
 
-  static StepExecutor currentStepExecutor() {
-    return XtepsBase.stepExecutor();
+  static StepReporter currentStepExecutor() {
+    return XtepsBase.stepReporter();
   }
 
   static Map<String, Object> artifactMapArgs(final Keyword keyword,
@@ -63,5 +65,18 @@ final class StepObjectUtils {
     final Map<K, V> copy = new LinkedHashMap<>(origin);
     copy.put(name, value);
     return copy;
+  }
+
+  static Map<String, Object> artifactsWithContexts(final Map<String, ?> origin,
+                                                   final Object[] contexts) {
+    final Map<String, Object> newMap = new HashMap<>(origin);
+    newMap.put(Artifacts.contextsArtifact(), contexts);
+    return newMap;
+  }
+
+  static Map<String, Object> artifactsWithoutContexts(final Map<String, ?> origin) {
+    final Map<String, Object> newMap = new HashMap<>(origin);
+    newMap.put(Artifacts.contextsArtifact(), EMPTY_OBJECT_ARRAY);
+    return newMap;
   }
 }

@@ -16,8 +16,8 @@
 package com.plugatar.xteps2.core.step;
 
 import com.plugatar.xteps2.core.Keyword;
-import com.plugatar.xteps2.core.StepExecutor;
 import com.plugatar.xteps2.core.StepNotImplementedException;
+import com.plugatar.xteps2.core.StepReporter;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThBiFunction;
 
@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static com.plugatar.xteps2.core.step.StepObjectUtils.EMPTY_STRING;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.artifactMapArgs;
+import static com.plugatar.xteps2.core.step.StepObjectUtils.artifactsWithContexts;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.copyMapAndPutArgs;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.currentStepExecutor;
 import static com.plugatar.xteps2.core.step.StepObjectUtils.emptyKeyword;
@@ -67,7 +68,7 @@ public interface BiFunctionStep<C1, C2, R> extends
    * @param <R>  the type of the result
    */
   class Of<C1, C2, R> implements BiFunctionStep<C1, C2, R> {
-    private final StepExecutor stepExecutor;
+    private final StepReporter stepReporter;
     private final Map<String, ?> artifacts;
     private final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action;
 
@@ -416,33 +417,33 @@ public interface BiFunctionStep<C1, C2, R> extends
     /**
      * Ctor.
      *
-     * @param stepExecutor the step executor
+     * @param stepReporter the step executor
      * @param artifacts    the step artifacts
      * @throws XtepsException if {@code stepExecutor} arg is null
      *                        or if {@code artifacts} arg is null
      */
-    public Of(final StepExecutor stepExecutor,
+    public Of(final StepReporter stepReporter,
               final Map<String, ?> artifacts) {
-      this(stepExecutor, artifacts, notImplementedAction());
+      this(stepReporter, artifacts, notImplementedAction());
     }
 
     /**
      * Ctor.
      *
-     * @param stepExecutor the step executor
+     * @param stepReporter the step executor
      * @param artifacts    the step artifact
      * @param action       the step action
      * @throws XtepsException if {@code stepExecutor} arg is null
      *                        or if {@code artifacts} arg is null
      *                        or if {@code action} arg is null
      */
-    public Of(final StepExecutor stepExecutor,
+    public Of(final StepReporter stepReporter,
               final Map<String, ?> artifacts,
               final ThBiFunction<? super C1, ? super C2, ? extends R, ?> action) {
-      if (stepExecutor == null) { throw new XtepsException("stepExecutor arg is null"); }
+      if (stepReporter == null) { throw new XtepsException("stepExecutor arg is null"); }
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       if (action == null) { throw new XtepsException("action arg is null"); }
-      this.stepExecutor = stepExecutor;
+      this.stepReporter = stepReporter;
       this.artifacts = artifacts;
       this.action = action;
     }
@@ -454,7 +455,8 @@ public interface BiFunctionStep<C1, C2, R> extends
     @Override
     public final R apply(final C1 c1,
                          final C2 c2) {
-      return this.stepExecutor.report(this.artifacts, () -> this.action.apply(c1, c2));
+      return this.stepReporter.executeStep(artifactsWithContexts(this.artifacts, new Object[]{c1, c2}),
+        () -> this.action.apply(c1, c2));
     }
 
     @Override
@@ -480,7 +482,7 @@ public interface BiFunctionStep<C1, C2, R> extends
     @Override
     public final BiFunctionStep<C1, C2, R> withArtifact(final String name,
                                                         final Object value) {
-      return new BiFunctionStep.Of<>(this.stepExecutor, copyMapAndPutArgs(this.artifacts, name, value), this.action);
+      return new BiFunctionStep.Of<>(this.stepReporter, copyMapAndPutArgs(this.artifacts, name, value), this.action);
     }
 
     @Override

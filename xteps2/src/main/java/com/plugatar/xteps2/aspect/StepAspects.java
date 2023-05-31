@@ -25,10 +25,14 @@ import com.plugatar.xteps2.annotation.Param;
 import com.plugatar.xteps2.annotation.Step;
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepNotImplementedException;
-import com.plugatar.xteps2.core.function.ThSupplier;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import com.plugatar.xteps2.core.TextFormatException;
+import com.plugatar.xteps2.core.TextFormatter;
+import com.plugatar.xteps2.core.XtepsException;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -39,6 +43,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.plugatar.xteps2.XtepsBase.exceptionHandler;
+import static com.plugatar.xteps2.XtepsBase.stepReporter;
 
 /**
  * Step aspects.
@@ -77,72 +84,70 @@ public class StepAspects {
 
   /**
    * Pointcut for {@link Step} annotation.
-   *
-   * @param step the step annotation
    */
-  @Pointcut("@annotation(step)")
-  public final void withStepAnnotation(final Step step) {
+  @Pointcut("@annotation(com.plugatar.xteps2.annotation.Step)")
+  public final void withStepAnnotation() {
   }
 
   /**
-   * Around advice for static method annotated with {@link Step} annotation.
+   * <em>Before</em> advice for static method annotated with {@link Step} annotation.
    *
    * @param joinPoint the join point
-   * @param step      the step annotation
-   * @return method result
+   * @throws XtepsException              if Xteps configuration is incorrect
+   * @throws TextFormatException         if if it's impossible to format <em>name</em> or <em>desc</em> artifacts
+   *                                     correctly
    * @throws StepNotImplementedException if method annotated with {@link NotImplemented} annotation
-   * @throws Throwable                   if method threw exception
    */
-  @Around(value = "staticMethod() && withStepAnnotation(step)", argNames = "joinPoint,step")
-  public final Object staticMethodStep(final ProceedingJoinPoint joinPoint,
-                                       final Step step) throws Throwable {
+  @Before(value = "withStepAnnotation() && staticMethod()")
+  public final void staticMethodStepStart(final JoinPoint joinPoint) {
+    final TextFormatter formatter = XtepsBase.textFormatter();
     final Class<?> cls = joinPoint.getSignature().getDeclaringType();
     final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     final Method method = signature.getMethod();
     final Object[] args = joinPoint.getArgs();
+    final Step step = method.getAnnotation(Step.class);
     final DefaultStep defaultStep = cls.getAnnotation(DefaultStep.class);
     final Map<String, Object> params = new LinkedHashMap<>();
     final Map<String, Object> replacements = replacements(
-      step,
-      defaultStep,
-      signature.getParameterNames(),
-      args,
-      method.getParameterAnnotations(),
-      params
+      step, defaultStep, signature.getParameterNames(),
+      args, method.getParameterAnnotations(), params
     );
     replacements.putIfAbsent("class", cls);
     replacements.putIfAbsent("method", method);
     replacements.putIfAbsent("args", args);
-    return XtepsBase.stepExecutor().report(
-      artifactMap(
-        step,
-        defaultStep,
-        keyword(step, defaultStep),
-        name(step, defaultStep, signature.getName()),
-        params,
-        desc(step, defaultStep),
-        replacements
-      ),
-      action(joinPoint, method.getAnnotation(NotImplemented.class))
-    );
+    stepReporter().startStep(artifactMap(
+      step,
+      defaultStep,
+      keyword(step, defaultStep),
+      formatter.format(name(step, defaultStep, signature.getName()), replacements),
+      params,
+      formatter.format(desc(step, defaultStep), replacements),
+      replacements
+    ));
+    if (method.isAnnotationPresent(NotImplemented.class)) {
+      final StepNotImplementedException exception = new StepNotImplementedException();
+      exceptionHandler().handle(exception);
+      throw exception;
+    }
   }
 
   /**
-   * Around advice for non-static method annotated with {@link Step} annotation.
+   * <em>Before</em> advice for non-static method annotated with {@link Step} annotation.
    *
    * @param joinPoint the join point
-   * @param step      the step annotation
-   * @return method result
+   * @throws XtepsException              if Xteps configuration is incorrect
+   * @throws TextFormatException         if if it's impossible to format <em>name</em> or <em>desc</em> artifacts
+   *                                     correctly
    * @throws StepNotImplementedException if method annotated with {@link NotImplemented} annotation
-   * @throws Throwable                   if method threw exception
    */
-  @Around(value = "nonStaticMethod() && !constructor() && withStepAnnotation(step)", argNames = "joinPoint,step")
-  public final Object nonStaticMethodStep(final ProceedingJoinPoint joinPoint,
-                                          final Step step) throws Throwable {
+  @Before(value = "withStepAnnotation() && nonStaticMethod()")
+  public final void nonStaticMethodStepStart(final JoinPoint joinPoint) {
+    final TextFormatter formatter = XtepsBase.textFormatter();
     final Class<?> cls = joinPoint.getSignature().getDeclaringType();
     final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     final Method method = signature.getMethod();
     final Object[] args = joinPoint.getArgs();
+    final Step step = method.getAnnotation(Step.class);
     final DefaultStep defaultStep = cls.getAnnotation(DefaultStep.class);
     final Map<String, Object> params = new LinkedHashMap<>();
     final Map<String, Object> replacements = replacements(
@@ -157,36 +162,39 @@ public class StepAspects {
     replacements.putIfAbsent("method", method);
     replacements.putIfAbsent("args", args);
     replacements.putIfAbsent("this", joinPoint.getThis());
-    return XtepsBase.stepExecutor().report(
-      artifactMap(
-        step,
-        defaultStep,
-        keyword(step, defaultStep),
-        name(step, defaultStep, signature.getName()),
-        params,
-        desc(step, defaultStep),
-        replacements
-      ),
-      action(joinPoint, method.getAnnotation(NotImplemented.class))
-    );
+    stepReporter().startStep(artifactMap(
+      step,
+      defaultStep,
+      keyword(step, defaultStep),
+      formatter.format(name(step, defaultStep, signature.getName()), replacements),
+      params,
+      formatter.format(desc(step, defaultStep), replacements),
+      replacements
+    ));
+    if (method.isAnnotationPresent(NotImplemented.class)) {
+      final StepNotImplementedException exception = new StepNotImplementedException();
+      exceptionHandler().handle(exception);
+      throw exception;
+    }
   }
 
   /**
-   * Around advice for constructor annotated with {@link Step} annotation.
+   * <em>Before</em> advice for constructor annotated with {@link Step} annotation.
    *
    * @param joinPoint the join point
-   * @param step      the step annotation
-   * @return constructor result
-   * @throws StepNotImplementedException if constructor annotated with {@link NotImplemented} annotation
-   * @throws Throwable                   if constructor threw exception
+   * @throws XtepsException              if Xteps configuration is incorrect
+   * @throws TextFormatException         if if it's impossible to format <em>name</em> or <em>desc</em> artifacts
+   *                                     correctly
+   * @throws StepNotImplementedException if method annotated with {@link NotImplemented} annotation
    */
-  @Around(value = "constructor() && withStepAnnotation(step)", argNames = "joinPoint,step")
-  public final Object ctorStep(final ProceedingJoinPoint joinPoint,
-                               final Step step) throws Throwable {
+  @Before(value = "withStepAnnotation() && constructor()")
+  public final void constructorStepStart(final JoinPoint joinPoint) {
+    final TextFormatter formatter = XtepsBase.textFormatter();
     final Class<?> cls = joinPoint.getSignature().getDeclaringType();
     final ConstructorSignature signature = (ConstructorSignature) joinPoint.getSignature();
     final Constructor<?> ctor = signature.getConstructor();
     final Object[] args = joinPoint.getArgs();
+    final Step step = ctor.getAnnotation(Step.class);
     final DefaultStep defaultStep = cls.getAnnotation(DefaultStep.class);
     final Map<String, Object> params = new LinkedHashMap<>();
     final Map<String, Object> replacements = replacements(
@@ -200,26 +208,56 @@ public class StepAspects {
     replacements.putIfAbsent("class", cls);
     replacements.putIfAbsent("ctor", ctor);
     replacements.putIfAbsent("args", args);
-    return XtepsBase.stepExecutor().report(
-      artifactMap(
-        step,
-        defaultStep,
-        keyword(step, defaultStep),
-        name(step, defaultStep, CTOR_STEP_NAME_PREFIX + cls.getSimpleName()),
-        params,
-        desc(step, defaultStep),
-        replacements
-      ),
-      action(joinPoint, ctor.getAnnotation(NotImplemented.class))
-    );
+    stepReporter().startStep(artifactMap(
+      step,
+      defaultStep,
+      keyword(step, defaultStep),
+      formatter.format(name(step, defaultStep, CTOR_STEP_NAME_PREFIX + cls.getSimpleName()), replacements),
+      params,
+      formatter.format(desc(step, defaultStep), replacements),
+      replacements
+    ));
+    if (ctor.isAnnotationPresent(NotImplemented.class)) {
+      final StepNotImplementedException exception = new StepNotImplementedException();
+      exceptionHandler().handle(exception);
+      throw exception;
+    }
+  }
+
+  /**
+   * <em>AfterReturning</em> advice for any method or constructor annotated with {@link Step} annotation.
+   *
+   * @throws XtepsException if Xteps configuration is incorrect
+   */
+  @AfterReturning(value = "withStepAnnotation() && (staticMethod() || nonStaticMethod() || constructor())")
+  public void stepPassed() {
+    stepReporter().passStep();
+  }
+
+  /**
+   * <em>AfterThrowing</em> advice for any method or constructor annotated with {@link Step} annotation.
+   *
+   * @throws XtepsException if Xteps configuration is incorrect
+   */
+  @AfterThrowing(value = "withStepAnnotation() && (staticMethod() || nonStaticMethod() || constructor())", throwing = "exception")
+  public void stepFailed(final Throwable exception) {
+    stepReporter().failStep(exception);
   }
 
   private static Keyword keyword(final Step step,
                                  final DefaultStep defaultStep) {
-    final Keywords keyword = step.keyword();
-    return keyword == Keywords.NONE && !step.ignoreDefault() && defaultStep != null
-      ? defaultStep.keyword()
-      : keyword;
+    String keywordStr = step.keywordStr();
+    if (keywordStr.isEmpty() && !step.ignoreDefault() && defaultStep != null) {
+      keywordStr = defaultStep.keywordStr();
+    }
+    if (!keywordStr.isEmpty()) {
+      return new Keyword.Of(keywordStr);
+    }
+    Keywords keyword = step.keyword();
+    if (keyword == Keywords.NONE && !step.ignoreDefault() && defaultStep != null) {
+      keyword = defaultStep.keyword();
+    }
+    return keyword;
   }
 
   private static String name(final Step step,
@@ -311,13 +349,6 @@ public class StepAspects {
     return replacements;
   }
 
-  private static ThSupplier<Object, Throwable> action(final ProceedingJoinPoint joinPoint,
-                                                      final NotImplemented notImplemented) {
-    return notImplemented == null
-      ? joinPoint::proceed
-      : () -> { throw new StepNotImplementedException(); };
-  }
-
   private static Map<String, Object> artifactMap(final Step step,
                                                  final DefaultStep defaultStep,
                                                  final Keyword keyword,
@@ -325,7 +356,7 @@ public class StepAspects {
                                                  final Map<String, ?> params,
                                                  final String desc,
                                                  final Map<String, Object> replacements) {
-    final Map<String, Object> map = new LinkedHashMap<>();
+    final Map<String, Object> map = new HashMap<>();
     map.put(Artifacts.keywordArtifact(), keyword);
     map.put(Artifacts.nameArtifact(), name);
     map.put(Artifacts.paramsArtifact(), params);

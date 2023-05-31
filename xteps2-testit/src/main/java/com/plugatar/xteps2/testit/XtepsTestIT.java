@@ -15,9 +15,9 @@
  */
 package com.plugatar.xteps2.testit;
 
+import com.plugatar.xteps2.XtepsBase;
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
-import com.plugatar.xteps2.core.XtepsException;
 import ru.testit.models.ItemStatus;
 import ru.testit.models.StepResult;
 import ru.testit.services.Adapter;
@@ -25,8 +25,7 @@ import ru.testit.services.AdapterManager;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.plugatar.xteps2.XtepsBase.textFormatter;
+import java.util.UUID;
 
 /**
  * {@link StepListener} implementation for Test IT.
@@ -38,60 +37,40 @@ public class XtepsTestIT implements StepListener {
    * Zero-argument public ctor.
    */
   public XtepsTestIT() {
-    this("Step");
-  }
-
-  /**
-   * Ctor.
-   *
-   * @param emptyNameReplacement the empty step name replacement
-   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
-   */
-  public XtepsTestIT(final String emptyNameReplacement) {
-    if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }
-    if (emptyNameReplacement.isEmpty()) { throw new XtepsException("emptyNameReplacement arg is empty"); }
-    this.emptyNameReplacement = emptyNameReplacement;
+    final Map<String, String> properties = XtepsBase.properties();
+    this.emptyNameReplacement = properties.getOrDefault("xteps.testit.emptyNameReplacement", "Step");
   }
 
   @Override
-  public final void stepStarted(final String uuid,
-                                final Map<String, ?> artifacts) {
+  public final void stepStarted(final Map<String, ?> artifacts) {
     final Keyword keyword = Utils.keyword(artifacts);
     final String name = Utils.name(artifacts);
     final String desc = Utils.desc(artifacts);
     final Map<String, Object> params = Utils.params(artifacts);
-    final Map<String, Object> replacements = Utils.replacements(artifacts);
     final StepResult stepResult = new StepResult();
-    stepResult.setName(textFormatter().format(
-      Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
-      replacements
-    ));
+    stepResult.setName(Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement));
     if (!desc.isEmpty()) {
       stepResult.setDescription(desc);
     }
     if (!params.isEmpty()) {
       final Map<String, String> processedParams = new HashMap<>();
-      params.forEach((paramName, paramValue) -> processedParams.put(paramName, textFormatter().asString(paramValue)));
+      params.forEach((paramName, paramValue) -> processedParams.put(paramName, XtepsBase.textFormatter().format(paramValue)));
       stepResult.setParameters(processedParams);
     }
-    Adapter.getAdapterManager().startStep(uuid, stepResult);
+    Adapter.getAdapterManager().startStep(UUID.randomUUID().toString(), stepResult);
   }
 
   @Override
-  public final void stepPassed(final String uuid) {
+  public final void stepPassed() {
     final AdapterManager adapterManager = Adapter.getAdapterManager();
-    adapterManager.updateStep(uuid, stepResult -> stepResult.setItemStatus(ItemStatus.PASSED));
-    adapterManager.stopStep(uuid);
+    adapterManager.updateStep(stepResult -> stepResult.setItemStatus(ItemStatus.PASSED));
+    adapterManager.stopStep();
   }
 
   @Override
-  public final void stepFailed(final String uuid,
-                               final Throwable exception) {
+  public final void stepFailed(final Throwable exception) {
     final AdapterManager adapterManager = Adapter.getAdapterManager();
-    adapterManager.updateStep(
-      uuid,
-      stepResult -> stepResult.setItemStatus(ItemStatus.FAILED).setThrowable(exception)
-    );
-    adapterManager.stopStep(uuid);
+    adapterManager.updateStep(stepResult -> stepResult.setItemStatus(ItemStatus.FAILED).setThrowable(exception));
+    adapterManager.stopStep();
   }
 }

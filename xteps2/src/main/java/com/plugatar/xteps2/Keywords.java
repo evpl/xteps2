@@ -19,23 +19,13 @@ import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.step.StepObject;
 
-import static com.plugatar.xteps2.XtepsBase.CONFIG;
-import static com.plugatar.xteps2.XtepsBase.stringProperty;
+import java.util.Map;
+
+import static com.plugatar.xteps2.XtepsBase.properties;
 
 /**
  * Default keywords.
  * <p>
- * Fields:
- * <ul>
- * <li>{@link #NONE}</li>
- * <li>{@link #BACKGROUND}</li>
- * <li>{@link #SCENARIO}</li>
- * <li>{@link #GIVEN}</li>
- * <li>{@link #WHEN}</li>
- * <li>{@link #THEN}</li>
- * <li>{@link #AND}</li>
- * <li>{@link #BUT}</li>
- * </ul>
  * Methods:
  * <ul>
  * <li>{@link #background()}</li>
@@ -45,6 +35,7 @@ import static com.plugatar.xteps2.XtepsBase.stringProperty;
  * <li>{@link #then()}</li>
  * <li>{@link #and()}</li>
  * <li>{@link #but()}</li>
+ * <li>{@link #asterisk()}</li>
  * <li>{@link #background(StepObject)}</li>
  * <li>{@link #scenario(StepObject)}</li>
  * <li>{@link #given(StepObject)}</li>
@@ -52,6 +43,7 @@ import static com.plugatar.xteps2.XtepsBase.stringProperty;
  * <li>{@link #then(StepObject)}</li>
  * <li>{@link #and(StepObject)}</li>
  * <li>{@link #but(StepObject)}</li>
+ * <li>{@link #asterisk(StepObject)}</li>
  * </ul>
  */
 public enum Keywords implements Keyword {
@@ -62,41 +54,45 @@ public enum Keywords implements Keyword {
   /**
    * The <em>Background</em> keyword.
    */
-  BACKGROUND(stringProperty(CONFIG.get().properties, "xteps.keywords.background", "Background")),
+  BACKGROUND(stringProperty(properties(), "xteps.keywords.background", "Background")),
   /**
    * The <em>Scenario</em> keyword.
    */
-  SCENARIO(stringProperty(CONFIG.get().properties, "xteps.keywords.scenario", "Scenario")),
+  SCENARIO(stringProperty(properties(), "xteps.keywords.scenario", "Scenario")),
   /**
    * The <em>Given</em> keyword.
    */
-  GIVEN(stringProperty(CONFIG.get().properties, "xteps.keywords.given", "Given")),
+  GIVEN(stringProperty(properties(), "xteps.keywords.given", "Given")),
   /**
    * The <em>When</em> keyword.
    */
-  WHEN(stringProperty(CONFIG.get().properties, "xteps.keywords.when", "When")),
+  WHEN(stringProperty(properties(), "xteps.keywords.when", "When")),
   /**
    * The <em>Then</em> keyword.
    */
-  THEN(stringProperty(CONFIG.get().properties, "xteps.keywords.then", "Then")),
+  THEN(stringProperty(properties(), "xteps.keywords.then", "Then")),
   /**
    * The <em>And</em> keyword.
    */
-  AND(stringProperty(CONFIG.get().properties, "xteps.keywords.and", "And")),
+  AND(stringProperty(properties(), "xteps.keywords.and", "And")),
   /**
    * The <em>But</em> keyword.
    */
-  BUT(stringProperty(CONFIG.get().properties, "xteps.keywords.but", "But"));
+  BUT(stringProperty(properties(), "xteps.keywords.but", "But")),
+  /**
+   * The <em>*</em> keyword.
+   */
+  ASTERISK(stringProperty(properties(), "xteps.keywords.asterisk", "*"));
 
-  private final String str;
+  private final String keywordStr;
 
-  Keywords(final String str) {
-    this.str = str;
+  Keywords(final String keywordStr) {
+    this.keywordStr = keywordStr;
   }
 
   @Override
   public final String toString() {
-    return this.str;
+    return this.keywordStr;
   }
 
   /**
@@ -160,6 +156,15 @@ public enum Keywords implements Keyword {
    */
   public static Keyword but() {
     return BUT;
+  }
+
+  /**
+   * Returns <em>*</em> keyword.
+   *
+   * @return <em>*</em> keyword
+   */
+  public static Keyword asterisk() {
+    return ASTERISK;
   }
 
   /**
@@ -244,5 +249,31 @@ public enum Keywords implements Keyword {
    */
   public static <S extends StepObject> S but(final S step) {
     return Artifacts.withKeyword(BUT, step);
+  }
+
+  /**
+   * Returns step object with <em>*</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>*</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S asterisk(final S step) {
+    return Artifacts.withKeyword(ASTERISK, step);
+  }
+
+  private static String stringProperty(final Map<String, String> properties,
+                                       final String propertyName,
+                                       final String defaultValue) {
+    final String propertyValue = properties.get(propertyName);
+    if (propertyValue == null) {
+      return defaultValue;
+    }
+    final String trimmedPropertyValue = propertyValue.trim();
+    if (trimmedPropertyValue.isEmpty()) {
+      return defaultValue;
+    }
+    return trimmedPropertyValue;
   }
 }

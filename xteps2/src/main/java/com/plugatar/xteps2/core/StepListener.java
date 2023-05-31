@@ -29,27 +29,21 @@ public interface StepListener {
   /**
    * Invoked each time a step starts.
    *
-   * @param uuid      the step UUID (not null, UUID format)
    * @param artifacts the step artifacts (not null, may be empty)
    */
-  void stepStarted(String uuid,
-                   Map<String, ?> artifacts);
+  void stepStarted(Map<String, ?> artifacts);
 
   /**
    * Invoked each time a step passes.
-   *
-   * @param uuid the step UUID (not null, UUID format)
    */
-  void stepPassed(String uuid);
+  void stepPassed();
 
   /**
    * Invoked each time a step fails.
    *
-   * @param uuid      the step UUID (not null, UUID format)
    * @param exception the step exception (not null)
    */
-  void stepFailed(String uuid,
-                  Throwable exception);
+  void stepFailed(Throwable exception);
 
   /**
    * Step listener utils.
@@ -120,13 +114,26 @@ public interface StepListener {
      *
      * @param artifacts the artifacts map
      * @return <em>replacements</em> artifact
-     * @throws XtepsException if {@code artifacts} arg is null
+     * @throws XtepsException if {@code replacements} arg is null
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> replacements(final Map<String, ?> artifacts) {
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.replacementsArtifact());
       return value instanceof Map ? (Map<String, Object>) value : Collections.emptyMap();
+    }
+
+    /**
+     * Returns <em>contexts</em> artifact from given map.
+     *
+     * @param artifacts the artifacts map
+     * @return <em>contexts</em> artifact
+     * @throws XtepsException if {@code artifacts} arg is null
+     */
+    public static Object[] contexts(final Map<String, ?> artifacts) {
+      if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
+      final Object value = artifacts.get(Artifacts.contextsArtifact());
+      return value instanceof Object[] ? (Object[]) value : new Object[0];
     }
 
     /**
@@ -144,8 +151,8 @@ public interface StepListener {
                                          final Keyword keyword,
                                          final String emptyNameReplacement) {
       if (name == null) { throw new XtepsException("artifacts arg is null"); }
-      if (keyword == null) { throw new XtepsException("artifacts arg is null"); }
-      if (emptyNameReplacement == null) { throw new XtepsException("artifacts arg is null"); }
+      if (keyword == null) { throw new XtepsException("keyword arg is null"); }
+      if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }
       final String keywordValue = keyword.toString();
       final String nameValue = name.isEmpty() ? emptyNameReplacement : name;
       return keywordValue.isEmpty() ? nameValue : keywordValue + " " + nameValue;

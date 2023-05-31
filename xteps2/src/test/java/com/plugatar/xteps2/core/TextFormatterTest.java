@@ -24,6 +24,10 @@ import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link TextFormatter}.
@@ -32,119 +36,157 @@ final class TextFormatterTest {
   private static final Pattern DEFAULT_PATTEN = Pattern.compile("\\{([^}]*)}");
 
   @Test
+  void ctorThrowsExceptionForNullExceptionHandlerArg() {
+    assertThatCode(() -> new TextFormatter.Default((ExceptionHandler) null, DEFAULT_PATTEN, true, true))
+      .isInstanceOf(XtepsException.class);
+  }
+
+  @Test
   void ctorThrowsExceptionForNullPatternArg() {
-    assertThatCode(() -> new TextFormatter.Default((Pattern) null, true, true))
+    assertThatCode(() -> new TextFormatter.Default(mock(ExceptionHandler.class), (Pattern) null, true, true))
       .isInstanceOf(XtepsException.class);
   }
 
   @Test
   void formatMethodForObject() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Obj());
 
     assertThat(formatter.format("Text {rep}", replacements))
       .isEqualTo("Text obj string");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void formatMethodForArray() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Object[]{'a', 'b', 'c'});
 
     assertThat(formatter.format("Text {rep}", replacements))
       .isEqualTo("Text [a, b, c]");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void formatMethodFieldForceAccessTrue() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, true, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, true, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Obj());
 
     assertThat(formatter.format("Text {rep.publicIntField} {rep.privateIntField}", replacements))
       .isEqualTo("Text 1 2");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void formatMethodFieldForceAccessFalse() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Obj());
 
     assertThat(formatter.format("Text {rep.publicIntField}", replacements))
       .isEqualTo("Text 1");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void formatMethodFieldForceAccessFalseException() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Obj());
 
-    assertThatCode(() -> formatter.format("Text {rep.privateIntField}", replacements))
-      .isInstanceOf(TextFormatException.class);
+    Throwable exception = null;
+    try {
+      formatter.format("Text {rep.privateIntField}", replacements);
+    } catch (final Throwable ex) {
+      exception = ex;
+    }
+    assertThat(exception).isInstanceOf(TextFormatException.class);
+    verify(exceptionHandler).handle(same(exception));
   }
 
   @Test
   void formatMethodMethodForceAccessTrue() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, true);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, true);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Obj());
 
     assertThat(formatter.format("Text {rep.publicIntMethod()} {rep.privateIntMethod()}", replacements))
       .isEqualTo("Text 3 4");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void formatMethodMethodForceAccessFalse() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Obj());
 
     assertThat(formatter.format("Text {rep.publicIntMethod()}", replacements))
       .isEqualTo("Text 3");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void formatMethodMethodForceAccessFalseException() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Obj());
 
-    assertThatCode(() -> formatter.format("Text {rep.privateIntMethod()}", replacements))
-      .isInstanceOf(TextFormatException.class);
+    Throwable exception = null;
+    try {
+      formatter.format("Text {rep.privateIntMethod()}", replacements);
+    } catch (final Throwable ex) {
+      exception = ex;
+    }
+    assertThat(exception).isInstanceOf(TextFormatException.class);
+    verify(exceptionHandler).handle(same(exception));
   }
 
   @Test
   void formatMethodGetArrayElement() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", new Object[]{'a', 'b', 'c'});
 
     assertThat(formatter.format("Text {rep.[1]}", replacements))
       .isEqualTo("Text b");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void formatMethodGetIterableElement() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", Arrays.asList('a', 'b', 'c'));
 
     assertThat(formatter.format("Text {rep.[1]}", replacements))
       .isEqualTo("Text b");
+    verifyNoInteractions(exceptionHandler);
   }
 
   @Test
   void longReplacement() {
-    final TextFormatter formatter = new TextFormatter.Default(DEFAULT_PATTEN, false, false);
+    final ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+    final TextFormatter formatter = new TextFormatter.Default(exceptionHandler, DEFAULT_PATTEN, false, false);
     final Map<String, Object> replacements = new HashMap<>();
     replacements.put("rep", Arrays.asList('a', 'b', new Obj()));
 
     assertThat(formatter.format("Text {rep.[2].returnThis().returnThis().publicIntField}", replacements))
       .isEqualTo("Text 1");
+    verifyNoInteractions(exceptionHandler);
   }
 
   static final class Obj {

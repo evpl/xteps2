@@ -15,9 +15,9 @@
  */
 package com.plugatar.xteps2.allure;
 
+import com.plugatar.xteps2.XtepsBase;
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
-import com.plugatar.xteps2.core.XtepsException;
 import io.qameta.allure.Allure;
 import io.qameta.allure.AllureLifecycle;
 import io.qameta.allure.model.Parameter;
@@ -27,91 +27,68 @@ import io.qameta.allure.util.ResultsUtils;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.plugatar.xteps2.XtepsBase.textFormatter;
+import java.util.UUID;
 
 /**
  * {@link StepListener} implementation for Allure.
  */
 public class XtepsAllure implements StepListener {
   private final String emptyNameReplacement;
-  private final String descriptionAttachmentName;
+  private final String descAttachmentName;
 
   /**
    * Zero-argument public ctor.
    */
   public XtepsAllure() {
-    this("Step", "Step description");
-  }
-
-  /**
-   * Ctor.
-   *
-   * @param emptyNameReplacement the empty step name replacement
-   * @param descAttachmentName   the step description attachment name
-   * @throws XtepsException if {@code emptyNameReplacement} arg is null or empty
-   *                        or if {@code descAttachmentName} arg is null or empty
-   */
-  public XtepsAllure(final String emptyNameReplacement,
-                     final String descAttachmentName) {
-    if (emptyNameReplacement == null) { throw new NullPointerException("emptyNameReplacement arg is null"); }
-    if (emptyNameReplacement.isEmpty()) { throw new IllegalArgumentException("emptyNameReplacement arg is empty"); }
-    if (descAttachmentName == null) { throw new NullPointerException("descAttachmentName arg is null"); }
-    if (descAttachmentName.isEmpty()) { throw new IllegalArgumentException("descAttachmentName arg is empty"); }
-    this.emptyNameReplacement = emptyNameReplacement;
-    this.descriptionAttachmentName = descAttachmentName;
+    final Map<String, String> properties = XtepsBase.properties();
+    this.emptyNameReplacement = properties.getOrDefault("xteps.allure.emptyNameReplacement", "Step");
+    this.descAttachmentName = properties.getOrDefault("xteps.allure.emptyNameReplacement", "Description");
   }
 
   @Override
-  public void stepStarted(final String uuid,
-                          final Map<String, ?> artifacts) {
+  public final void stepStarted(final Map<String, ?> artifacts) {
     final Keyword keyword = Utils.keyword(artifacts);
     final String name = Utils.name(artifacts);
     final String desc = Utils.desc(artifacts);
     final Map<String, Object> params = Utils.params(artifacts);
-    final Map<String, Object> replacements = Utils.replacements(artifacts);
     final StepResult stepResult = new StepResult();
-    stepResult.setName(textFormatter().format(
-      Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
-      replacements
-    ));
+    stepResult.setName(Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement));
     if (!desc.isEmpty()) {
       stepResult.setDescription(desc);
     }
     if (!params.isEmpty()) {
       final List<Parameter> allureParams = stepResult.getParameters();
       params.forEach((paramName, paramValue) ->
-        allureParams.add(new Parameter().setName(paramName).setValue(textFormatter().asString(paramValue))));
+        allureParams.add(new Parameter().setName(paramName).setValue(XtepsBase.textFormatter().format(paramValue))));
     }
-    Allure.getLifecycle().startStep(uuid, stepResult);
+    Allure.getLifecycle().startStep(UUID.randomUUID().toString(), stepResult);
   }
 
   @Override
-  public final void stepPassed(final String uuid) {
+  public final void stepPassed() {
     final AllureLifecycle allureLifecycle = Allure.getLifecycle();
-    allureLifecycle.updateStep(uuid, stepResult -> {
+    allureLifecycle.updateStep(stepResult -> {
       this.attachStepDescIfPresent(stepResult);
       stepResult.setStatus(Status.PASSED);
     });
-    allureLifecycle.stopStep(uuid);
+    allureLifecycle.stopStep();
   }
 
   @Override
-  public final void stepFailed(final String uuid,
-                               final Throwable exception) {
+  public final void stepFailed(final Throwable exception) {
     final AllureLifecycle allureLifecycle = Allure.getLifecycle();
-    allureLifecycle.updateStep(uuid, stepResult -> {
+    allureLifecycle.updateStep(stepResult -> {
       this.attachStepDescIfPresent(stepResult);
       stepResult.setStatus(ResultsUtils.getStatus(exception).orElse(Status.BROKEN))
         .setStatusDetails(ResultsUtils.getStatusDetails(exception).orElse(null));
     });
-    allureLifecycle.stopStep(uuid);
+    allureLifecycle.stopStep();
   }
 
   private void attachStepDescIfPresent(final StepResult stepResult) {
     final String stepDescription = stepResult.getDescription();
     if (stepDescription != null && !stepDescription.isEmpty()) {
-      Allure.attachment(this.descriptionAttachmentName, stepDescription);
+      Allure.attachment(this.descAttachmentName, stepDescription);
     }
   }
 }
