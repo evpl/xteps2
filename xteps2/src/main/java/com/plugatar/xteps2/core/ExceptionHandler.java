@@ -116,6 +116,9 @@ public interface ExceptionHandler {
    */
   class Fake implements ExceptionHandler {
 
+    /**
+     * Ctor.
+     */
     public Fake() {
     }
 

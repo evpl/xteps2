@@ -353,8 +353,14 @@ public interface TextFormatter {
     }
   }
 
+  /**
+   * Fake {@code TextFormatter} implementation.
+   */
   class Fake implements TextFormatter {
 
+    /**
+     * Ctor.
+     */
     public Fake() {
     }
 
