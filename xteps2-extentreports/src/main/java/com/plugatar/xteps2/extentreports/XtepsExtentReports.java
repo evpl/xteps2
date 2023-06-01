@@ -123,10 +123,16 @@ public class XtepsExtentReports implements StepListener {
     final LinkedList<ExtentTest> nodes = NODES.get();
     final ExtentTest stepNode;
     switch (nodes.size()) {
-      case 0:
-        throw new XtepsException("Not found current test");
-      case 1:
-        throw new XtepsException("Not found current step");
+      case 0: {
+        final XtepsException baseException = new XtepsException("Not found current test");
+        baseException.addSuppressed(exception);
+        throw baseException;
+      }
+      case 1: {
+        final XtepsException baseException = new XtepsException("Not found current step");
+        baseException.addSuppressed(exception);
+        throw baseException;
+      }
       default:
         stepNode = nodes.removeLast();
     }
