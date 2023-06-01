@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.plugatar.xteps2.core.chain.base;
+package com.plugatar.xteps2.core.sc.base;
+
+import com.plugatar.xteps2.core.sc.MemNoCtxSC;
 
 /**
- * Memorizing step context.
+ * Base any context step context.
  *
- * @param <P> the type of the previous step context
- * @param <F> the type of the non-memorizing step context
+ * @param <S> the type of the step context implementing {@code BaseAnyCtxSC}
  */
-public interface MemSC<P extends StepContext<?>, F extends StepContext<?>> {
+public interface BaseAnyCtxSC<S extends BaseAnyCtxSC<S>> extends StepContext<S> {
 
   /**
-   * Returns previous step context.
+   * Returns no context step context.
    *
-   * @return previous step context
+   * @return no context step context
    */
-  P previous();
-
-  /**
-   * Returns non-memorizing step context.
-   *
-   * @return non-memorizing step context
-   */
-  F forget();
+  MemNoCtxSC<S> noContext();
 }

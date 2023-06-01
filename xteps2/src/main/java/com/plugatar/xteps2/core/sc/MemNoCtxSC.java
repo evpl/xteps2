@@ -13,50 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.plugatar.xteps2.core.chain;
+package com.plugatar.xteps2.core.sc;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.chain.base.BaseNoCtxSC;
+import com.plugatar.xteps2.core.sc.base.BaseNoCtxSC;
+import com.plugatar.xteps2.core.sc.base.MemSC;
+import com.plugatar.xteps2.core.sc.base.StepContext;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
 import com.plugatar.xteps2.core.function.ThRunnable;
 import com.plugatar.xteps2.core.function.ThSupplier;
 
 /**
- * No context step context.
+ * Memorizing no context step context.
+ *
+ * @param <P> the type of the previous step context
  */
-public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
+public interface MemNoCtxSC<P extends StepContext<?>> extends
+  BaseNoCtxSC<MemNoCtxSC<P>>,
+  MemSC<P, NoCtxSC> {
 
   @Override
-  <R> CtxSC<R> with(ThSupplier<? extends R, ?> action);
-
-  static NoCtxSC instance() {
-    return Of.INSTANCE;
-  }
+  <R> MemCtxSC<R, P> with(ThSupplier<? extends R, ?> action);
 
   /**
-   * Default {@code NoCtxSC} implementation.
+   * Default {@code MemNoCtxSC} implementation.
+   *
+   * @param <P> the type of the previous step context
    */
-  class Of implements NoCtxSC {
-    private static final NoCtxSC INSTANCE = new Of();
+  class Of<P extends StepContext<?>> implements MemNoCtxSC<P> {
+    private final P previous;
 
     /**
      * Ctor.
+     *
+     * @param previous the previous step context
      */
-    public Of() {
+    public Of(final P previous) {
+      this.previous = previous;
     }
 
     @Override
-    public final NoCtxSC exec(final ThRunnable<?> action) {
+    public final MemNoCtxSC<P> exec(final ThRunnable<?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
       ThRunnable.unchecked(action).run();
       return this;
     }
 
     @Override
-    public final <R> CtxSC<R> with(final ThSupplier<? extends R, ?> action) {
+    public final <R> MemCtxSC<R, P> with(final ThSupplier<? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
-      return new CtxSC.Of<>(ThSupplier.unchecked(action).get());
+      return new MemCtxSC.Of<>(ThSupplier.unchecked(action).get(), this.previous);
     }
 
     @Override
@@ -66,16 +73,26 @@ public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
     }
 
     @Override
-    public final NoCtxSC it(final ThConsumer<? super NoCtxSC, ?> action) {
+    public final MemNoCtxSC<P> it(final ThConsumer<? super MemNoCtxSC<P>, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
       ThConsumer.unchecked(action).accept(this);
       return this;
     }
 
     @Override
-    public final <R> R itRes(final ThFunction<? super NoCtxSC, ? extends R, ?> action) {
+    public final <R> R itRes(final ThFunction<? super MemNoCtxSC<P>, ? extends R, ?> action) {
       if (action == null) { throw new XtepsException("action arg is null"); }
       return ThFunction.unchecked(action).apply(this);
+    }
+
+    @Override
+    public final P previous() {
+      return this.previous;
+    }
+
+    @Override
+    public final NoCtxSC forget() {
+      return NoCtxSC.instance();
     }
   }
 }

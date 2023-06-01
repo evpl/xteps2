@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.plugatar.xteps2.core.chain.base;
+package com.plugatar.xteps2.core.sc.base;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.function.ThBiConsumer;
-import com.plugatar.xteps2.core.function.ThBiFunction;
+import com.plugatar.xteps2.core.function.ThTriConsumer;
+import com.plugatar.xteps2.core.function.ThTriFunction;
 
 /**
- * Base bi context step context.
+ * Base tri context step context.
  *
  * @param <C1> the type of the first context
  * @param <C2> the type of the second context
- * @param <S>  the type of the step context implementing {@code BaseBiCtxSC}
+ * @param <C3> the type of the third context
+ * @param <S>  the type of the step context implementing {@code BaseTriCtxSC}
  */
-public interface BaseBiCtxSC<C1, C2, S extends BaseBiCtxSC<C1, C2, S>> extends StepContext<S>, BaseAnyCtxSC<S> {
+public interface BaseTriCtxSC<C1, C2, C3, S extends BaseTriCtxSC<C1, C2, C3, S>> extends StepContext<S>, BaseAnyCtxSC<S> {
 
   /**
    * Executes given action.
@@ -35,7 +36,7 @@ public interface BaseBiCtxSC<C1, C2, S extends BaseBiCtxSC<C1, C2, S>> extends S
    * @return this step context
    * @throws XtepsException if {@code action} is null
    */
-  S exec(ThBiConsumer<? super C1, ? super C2, ?> action);
+  S exec(ThTriConsumer<? super C1, ? super C2, ? super C3, ?> action);
 
   /**
    * Executes given action and returns new context step context.
@@ -45,7 +46,7 @@ public interface BaseBiCtxSC<C1, C2, S extends BaseBiCtxSC<C1, C2, S>> extends S
    * @return new context step context
    * @throws XtepsException if {@code action} is null
    */
-  <R> BaseTriCtxSC<R, C1, C2, ?> with(ThBiFunction<? super C1, ? super C2, ? extends R, ?> action);
+  <R> BaseTriCtxSC<R, C1, C2, ?> with(ThTriFunction<? super C1, ? super C2, ? super C3, ? extends R, ?> action);
 
   /**
    * Executes given action and returns action result.
@@ -55,21 +56,25 @@ public interface BaseBiCtxSC<C1, C2, S extends BaseBiCtxSC<C1, C2, S>> extends S
    * @return action result
    * @throws XtepsException if {@code action} is null
    */
-  <R> R res(ThBiFunction<? super C1, ? super C2, ? extends R, ?> action);
+  <R> R res(ThTriFunction<? super C1, ? super C2, ? super C3, ? extends R, ?> action);
 
   /**
    * Executes given action and returns new context step context.
    *
    * @param action1 the first action
    * @param action2 the second action
+   * @param action3 the second action
    * @param <R1>    the type of the new context
    * @param <R2>    the type of the new context
+   * @param <R3>    the type of the new context
    * @return new context step context
    * @throws XtepsException if {@code action1} is null
    *                        or if {@code action2} is null
+   *                        or if {@code action3} is null
    */
-  <R1, R2> BaseBiCtxSC<R1, R2, ?> map(final ThBiFunction<? super C1, ? super C2, ? extends R1, ?> action1,
-                                      final ThBiFunction<? super C1, ? super C2, ? extends R2, ?> action2);
+  <R1, R2, R3> BaseTriCtxSC<R1, R2, R3, ?> map(final ThTriFunction<? super C1, ? super C2, ? super C3, ? extends R1, ?> action1,
+                                               final ThTriFunction<? super C1, ? super C2, ? super C3, ? extends R2, ?> action2,
+                                               final ThTriFunction<? super C1, ? super C2, ? super C3, ? extends R3, ?> action3);
 
   /**
    * Returns the first context.
@@ -84,4 +89,11 @@ public interface BaseBiCtxSC<C1, C2, S extends BaseBiCtxSC<C1, C2, S>> extends S
    * @return the second context
    */
   C2 context2();
+
+  /**
+   * Returns the third context.
+   *
+   * @return the third context
+   */
+  C3 context3();
 }

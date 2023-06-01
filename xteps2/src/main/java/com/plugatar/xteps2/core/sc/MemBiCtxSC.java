@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.plugatar.xteps2.core.chain;
+package com.plugatar.xteps2.core.sc;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.chain.base.BaseBiCtxSC;
-import com.plugatar.xteps2.core.chain.base.MemSC;
-import com.plugatar.xteps2.core.chain.base.StepContext;
+import com.plugatar.xteps2.core.sc.base.BaseBiCtxSC;
+import com.plugatar.xteps2.core.sc.base.MemSC;
+import com.plugatar.xteps2.core.sc.base.StepContext;
 import com.plugatar.xteps2.core.function.ThBiConsumer;
 import com.plugatar.xteps2.core.function.ThBiFunction;
 import com.plugatar.xteps2.core.function.ThConsumer;

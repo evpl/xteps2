@@ -13,45 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.plugatar.xteps2.core.chain.base;
+package com.plugatar.xteps2.core.sc.base;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.function.ThRunnable;
-import com.plugatar.xteps2.core.function.ThSupplier;
+import com.plugatar.xteps2.core.function.ThConsumer;
+import com.plugatar.xteps2.core.function.ThFunction;
 
 /**
- * Base no context step context.
+ * Base step context.
  *
- * @param <S> the type of the step context implementing {@code BaseNoCtxSC}
+ * @param <S> the type of the step context implementing {@code StepContext}
  */
-public interface BaseNoCtxSC<S extends BaseNoCtxSC<S>> extends StepContext<S> {
+public interface StepContext<S extends StepContext<S>> {
 
   /**
-   * Executes given action.
+   * Executes given action on this step context.
    *
    * @param action the action
    * @return this step context
    * @throws XtepsException if {@code action} is null
    */
-  S exec(ThRunnable<?> action);
+  S it(ThConsumer<? super S, ?> action);
 
   /**
-   * Executes given action and returns new context step context.
-   *
-   * @param action the action
-   * @param <R>    the type of the nwe context
-   * @return new context step context
-   * @throws XtepsException if {@code action} is null
-   */
-  <R> BaseCtxSC<R, ?> with(ThSupplier<? extends R, ?> action);
-
-  /**
-   * Executes given action and returns action result.
+   * Executes given action on this step context and returns result.
    *
    * @param action the action
    * @param <R>    the type of the result
    * @return action result
    * @throws XtepsException if {@code action} is null
    */
-  <R> R res(ThSupplier<? extends R, ?> action);
+  <R> R itRes(ThFunction<? super S, ? extends R, ?> action);
 }

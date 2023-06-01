@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Step contexts.
+ * Base step contexts.
  */
-package com.plugatar.xteps2.core.chain;
+package com.plugatar.xteps2.core.sc.base;
