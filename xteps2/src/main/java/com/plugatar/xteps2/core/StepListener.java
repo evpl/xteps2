@@ -63,7 +63,7 @@ public interface StepListener {
      * @return <em>keyword</em> artifact
      * @throws XtepsException if {@code artifacts} arg is null
      */
-    public static Keyword keyword(final Map<String, ?> artifacts) {
+    public static Keyword getKeyword(final Map<String, ?> artifacts) {
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.keywordArtifact());
       return value instanceof Keyword ? (Keyword) value : Keywords.NONE;
@@ -76,7 +76,7 @@ public interface StepListener {
      * @return <em>keyword</em> artifact
      * @throws XtepsException if {@code artifacts} arg is null
      */
-    public static String name(final Map<String, ?> artifacts) {
+    public static String getName(final Map<String, ?> artifacts) {
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.nameArtifact());
       return value instanceof String ? (String) value : "";
@@ -89,7 +89,7 @@ public interface StepListener {
      * @return <em>desc</em> artifact
      * @throws XtepsException if {@code artifacts} arg is null
      */
-    public static String desc(final Map<String, ?> artifacts) {
+    public static String getDesc(final Map<String, ?> artifacts) {
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.descArtifact());
       return value instanceof String ? (String) value : "";
@@ -103,7 +103,7 @@ public interface StepListener {
      * @throws XtepsException if {@code artifacts} arg is null
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> params(final Map<String, ?> artifacts) {
+    public static Map<String, Object> getParams(final Map<String, ?> artifacts) {
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.paramsArtifact());
       return value instanceof Map ? (Map<String, Object>) value : Collections.emptyMap();
@@ -117,7 +117,7 @@ public interface StepListener {
      * @throws XtepsException if {@code replacements} arg is null
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> replacements(final Map<String, ?> artifacts) {
+    public static Map<String, Object> getReplacements(final Map<String, ?> artifacts) {
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.replacementsArtifact());
       return value instanceof Map ? (Map<String, Object>) value : Collections.emptyMap();
@@ -130,7 +130,7 @@ public interface StepListener {
      * @return <em>contexts</em> artifact
      * @throws XtepsException if {@code artifacts} arg is null
      */
-    public static Object[] contexts(final Map<String, ?> artifacts) {
+    public static Object[] getContexts(final Map<String, ?> artifacts) {
       if (artifacts == null) { throw new XtepsException("artifacts arg is null"); }
       final Object value = artifacts.get(Artifacts.contextsArtifact());
       return value instanceof Object[] ? (Object[]) value : new Object[0];
@@ -147,9 +147,9 @@ public interface StepListener {
      *                        or if {@code keyword} arg is null
      *                        or if {@code emptyNameReplacement} arg is null
      */
-    public static String nameWithKeyword(final String name,
-                                         final Keyword keyword,
-                                         final String emptyNameReplacement) {
+    public static String getNameWithKeyword(final String name,
+                                            final Keyword keyword,
+                                            final String emptyNameReplacement) {
       if (name == null) { throw new XtepsException("artifacts arg is null"); }
       if (keyword == null) { throw new XtepsException("keyword arg is null"); }
       if (emptyNameReplacement == null) { throw new XtepsException("emptyNameReplacement arg is null"); }

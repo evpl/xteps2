@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Step artifacts.
+ * Utility class. Step artifacts.
  * <p>
  * Methods:
  * <ul>

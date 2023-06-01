@@ -16,10 +16,10 @@
 package com.plugatar.xteps2;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.chain.BiCtxSC;
-import com.plugatar.xteps2.core.chain.CtxSC;
-import com.plugatar.xteps2.core.chain.NoCtxSC;
-import com.plugatar.xteps2.core.chain.TriCtxSC;
+import com.plugatar.xteps2.core.sc.BiCtxSC;
+import com.plugatar.xteps2.core.sc.CtxSC;
+import com.plugatar.xteps2.core.sc.NoCtxSC;
+import com.plugatar.xteps2.core.sc.TriCtxSC;
 
 /**
  * Utility class. Contains methods for creating step contexts.

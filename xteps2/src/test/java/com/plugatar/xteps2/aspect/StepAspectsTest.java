@@ -46,16 +46,16 @@ final class StepAspectsTest {
 
     /* stepStarted method */
     final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
-    assertThat(StepListener.Utils.name(artifacts)).isEqualTo("Custom name");
-    assertThat(StepListener.Utils.desc(artifacts)).isEqualTo("Default desc");
-    assertThat(StepListener.Utils.params(artifacts)).containsExactly(
+    assertThat(StepListener.Utils.getName(artifacts)).isEqualTo("Custom name");
+    assertThat(StepListener.Utils.getDesc(artifacts)).isEqualTo("Default desc");
+    assertThat(StepListener.Utils.getParams(artifacts)).containsExactly(
       entry("Default param 1", "Default value 1"),
       entry("Default param 2", "Default value 2"),
       entry("Custom param", "Custom value"),
       entry("methodArg1", 1),
       entry("methodArg2", "value")
     );
-    assertThat(StepListener.Utils.replacements(artifacts)).contains(
+    assertThat(StepListener.Utils.getReplacements(artifacts)).contains(
       entry("args", new Object[]{1, "value"}),
       entry("Default param 1", "Default value 1"),
       entry("Default param 2", "Default value 2"),
@@ -79,16 +79,16 @@ final class StepAspectsTest {
 
     /* stepStarted method */
     final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
-    assertThat(StepListener.Utils.name(artifacts)).isEqualTo("Custom name");
-    assertThat(StepListener.Utils.desc(artifacts)).isEqualTo("Default desc");
-    assertThat(StepListener.Utils.params(artifacts)).containsExactly(
+    assertThat(StepListener.Utils.getName(artifacts)).isEqualTo("Custom name");
+    assertThat(StepListener.Utils.getDesc(artifacts)).isEqualTo("Default desc");
+    assertThat(StepListener.Utils.getParams(artifacts)).containsExactly(
       entry("Default param 1", "Default value 1"),
       entry("Default param 2", "Default value 2"),
       entry("Custom param", "Custom value"),
       entry("methodArg1", 1),
       entry("methodArg2", "value")
     );
-    assertThat(StepListener.Utils.replacements(artifacts)).contains(
+    assertThat(StepListener.Utils.getReplacements(artifacts)).contains(
       entry("args", new Object[]{1, "value"}),
       entry("Default param 1", "Default value 1"),
       entry("Default param 2", "Default value 2"),
@@ -111,16 +111,16 @@ final class StepAspectsTest {
 
     /* stepStarted method */
     final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
-    assertThat(StepListener.Utils.name(artifacts)).isEqualTo("Custom name");
-    assertThat(StepListener.Utils.desc(artifacts)).isEqualTo("Default desc");
-    assertThat(StepListener.Utils.params(artifacts)).containsExactly(
+    assertThat(StepListener.Utils.getName(artifacts)).isEqualTo("Custom name");
+    assertThat(StepListener.Utils.getDesc(artifacts)).isEqualTo("Default desc");
+    assertThat(StepListener.Utils.getParams(artifacts)).containsExactly(
       entry("Default param 1", "Default value 1"),
       entry("Default param 2", "Default value 2"),
       entry("Custom param", "Custom value"),
       entry("methodArg1", 1),
       entry("methodArg2", "value")
     );
-    assertThat(StepListener.Utils.replacements(artifacts)).contains(
+    assertThat(StepListener.Utils.getReplacements(artifacts)).contains(
       entry("args", new Object[]{1, "value"}),
       entry("Default param 1", "Default value 1"),
       entry("Default param 2", "Default value 2"),

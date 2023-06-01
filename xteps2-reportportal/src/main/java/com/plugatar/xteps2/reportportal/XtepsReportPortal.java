@@ -46,12 +46,12 @@ public class XtepsReportPortal implements StepListener {
   public final void stepStarted(final Map<String, ?> artifacts) {
     final Launch launch = Launch.currentLaunch();
     if (launch != null) {
-      final Keyword keyword = Utils.keyword(artifacts);
-      final String name = Utils.name(artifacts);
-      final String desc = Utils.desc(artifacts);
-      final Map<String, Object> params = Utils.params(artifacts);
+      final Keyword keyword = Utils.getKeyword(artifacts);
+      final String name = Utils.getName(artifacts);
+      final String desc = Utils.getDesc(artifacts);
+      final Map<String, Object> params = Utils.getParams(artifacts);
       final StartTestItemRQ startTestItemRQ = StepRequestUtils.buildStartStepRequest(
-        Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement),
+        Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement),
         desc
       );
       if (!params.isEmpty()) {

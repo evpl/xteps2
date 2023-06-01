@@ -73,10 +73,10 @@ public class XtepsExtentReports implements StepListener {
   @Override
   public final void stepStarted(final Map<String, ?> artifacts) {
     final TextFormatter formatter = textFormatter();
-    final Keyword keyword = Utils.keyword(artifacts);
-    final String name = formatter.format(Utils.name(artifacts));
-    final String desc = formatter.format(Utils.desc(artifacts));
-    final Map<String, Object> params = Utils.params(artifacts);
+    final Keyword keyword = Utils.getKeyword(artifacts);
+    final String name = formatter.format(Utils.getName(artifacts));
+    final String desc = formatter.format(Utils.getDesc(artifacts));
+    final Map<String, Object> params = Utils.getParams(artifacts);
     final LinkedList<ExtentTest> nodes = NODES.get();
     if (nodes.isEmpty()) {
       throw new XtepsException("Not found current test");
@@ -93,7 +93,7 @@ public class XtepsExtentReports implements StepListener {
       }
       stepNode = previousNode.createNode(gherkinKeyword, name);
     } else {
-      stepNode = previousNode.createNode(Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement));
+      stepNode = previousNode.createNode(Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement));
     }
     final Test stepModel = stepNode.getModel();
     stepModel.getAuthorSet().clear();

@@ -43,12 +43,12 @@ public class XtepsTestIT implements StepListener {
 
   @Override
   public final void stepStarted(final Map<String, ?> artifacts) {
-    final Keyword keyword = Utils.keyword(artifacts);
-    final String name = Utils.name(artifacts);
-    final String desc = Utils.desc(artifacts);
-    final Map<String, Object> params = Utils.params(artifacts);
+    final Keyword keyword = Utils.getKeyword(artifacts);
+    final String name = Utils.getName(artifacts);
+    final String desc = Utils.getDesc(artifacts);
+    final Map<String, Object> params = Utils.getParams(artifacts);
     final StepResult stepResult = new StepResult();
-    stepResult.setName(Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement));
+    stepResult.setName(Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement));
     if (!desc.isEmpty()) {
       stepResult.setDescription(desc);
     }

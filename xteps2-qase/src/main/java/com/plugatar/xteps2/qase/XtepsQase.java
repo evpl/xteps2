@@ -40,12 +40,12 @@ public class XtepsQase implements StepListener {
 
   @Override
   public final void stepStarted(final Map<String, ?> artifacts) {
-    final Keyword keyword = Utils.keyword(artifacts);
-    final String name = Utils.name(artifacts);
-    final String desc = Utils.desc(artifacts);
+    final Keyword keyword = Utils.getKeyword(artifacts);
+    final String name = Utils.getName(artifacts);
+    final String desc = Utils.getDesc(artifacts);
     StepStorage.startStep();
     StepStorage.getCurrentStep()
-      .action(Utils.nameWithKeyword(name, keyword, this.emptyNameReplacement))
+      .action(Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement))
       .comment(desc);
   }
 
