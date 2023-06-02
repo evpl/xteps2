@@ -52,6 +52,10 @@ public enum Keywords implements Keyword {
    */
   NONE(""),
   /**
+   * The <em>Feature</em> keyword.
+   */
+  FEATURE(stringProperty(properties(), "xteps.keywords.feature", "Feature")),
+  /**
    * The <em>Background</em> keyword.
    */
   BACKGROUND(stringProperty(properties(), "xteps.keywords.background", "Background")),
@@ -59,6 +63,10 @@ public enum Keywords implements Keyword {
    * The <em>Scenario</em> keyword.
    */
   SCENARIO(stringProperty(properties(), "xteps.keywords.scenario", "Scenario")),
+  /**
+   * The <em>Scenario Outline</em> keyword.
+   */
+  SCENARIO_OUTLINE(stringProperty(properties(), "xteps.keywords.scenarioOutline", "Scenario Outline")),
   /**
    * The <em>Given</em> keyword.
    */
@@ -96,6 +104,15 @@ public enum Keywords implements Keyword {
   }
 
   /**
+   * Returns <em>Feature</em> keyword.
+   *
+   * @return <em>Feature</em> keyword
+   */
+  public static Keyword feature() {
+    return FEATURE;
+  }
+
+  /**
    * Returns <em>Background</em> keyword.
    *
    * @return <em>Background</em> keyword
@@ -111,6 +128,15 @@ public enum Keywords implements Keyword {
    */
   public static Keyword scenario() {
     return SCENARIO;
+  }
+
+  /**
+   * Returns <em>Scenario Outline</em> keyword.
+   *
+   * @return <em>Scenario Outline</em> keyword
+   */
+  public static Keyword scenarioOutline() {
+    return SCENARIO_OUTLINE;
   }
 
   /**
@@ -168,6 +194,18 @@ public enum Keywords implements Keyword {
   }
 
   /**
+   * Returns step object with <em>Feature</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>Feature</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S feature(final S step) {
+    return Artifacts.withKeyword(FEATURE, step);
+  }
+
+  /**
    * Returns step object with <em>Background</em> keyword.
    *
    * @param step the origin step object
@@ -189,6 +227,18 @@ public enum Keywords implements Keyword {
    */
   public static <S extends StepObject> S scenario(final S step) {
     return Artifacts.withKeyword(SCENARIO, step);
+  }
+
+  /**
+   * Returns step object with <em>Scenario Outline</em> keyword.
+   *
+   * @param step the origin step object
+   * @param <S>  the type of the step object
+   * @return step object with <em>Scenario Outline</em> keyword
+   * @throws XtepsException if {@code step} arg is null
+   */
+  public static <S extends StepObject> S scenarioOutline(final S step) {
+    return Artifacts.withKeyword(SCENARIO_OUTLINE, step);
   }
 
   /**
