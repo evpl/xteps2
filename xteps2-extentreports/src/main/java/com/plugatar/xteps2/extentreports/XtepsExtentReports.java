@@ -36,7 +36,7 @@ import static com.plugatar.xteps2.XtepsBase.textFormatter;
 public class XtepsExtentReports implements StepListener {
   private static final ThreadLocal<LinkedList<ExtentTest>> NODES = new InheritableThreadLocal<LinkedList<ExtentTest>>() {
     @Override
-    public LinkedList<ExtentTest> initialValue() {
+    protected LinkedList<ExtentTest> initialValue() {
       return new LinkedList<>();
     }
 
@@ -99,7 +99,7 @@ public class XtepsExtentReports implements StepListener {
       } catch (final Exception ex) {
         throw new XtepsException("Can not use keyword " + keywordStr, ex);
       }
-      stepNode = previousNode.createNode(gherkinKeyword, name);
+      stepNode = previousNode.createNode(gherkinKeyword, name.isEmpty() ? this.emptyNameReplacement : name);
     } else {
       stepNode = previousNode.createNode(Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement));
     }
@@ -155,7 +155,8 @@ public class XtepsExtentReports implements StepListener {
     if (!desc.isEmpty()) {
       array[counter[0]++] = new String[]{"Description", desc};
     }
-    params.forEach((name, value) -> array[counter[0]++] = new String[]{name, XtepsBase.textFormatter().format(value)});
+    final TextFormatter textFormatter = XtepsBase.textFormatter();
+    params.forEach((name, value) -> array[counter[0]++] = new String[]{name, textFormatter.format(value)});
     return array;
   }
 }
