@@ -40,7 +40,6 @@ import static com.plugatar.xteps2.XtepsBase.properties;
  * <li>{@link #BUT}</li>
  * <li>{@link #ASTERISK}</li>
  * </ul>
- * <p>
  * Methods:
  * <ul>
  * <li>{@link #feature()}</li>
