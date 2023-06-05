@@ -17,8 +17,10 @@ package com.plugatar.xteps2.core;
 
 import com.plugatar.xteps2.Artifacts;
 import com.plugatar.xteps2.Keywords;
+import com.plugatar.xteps2.XtepsBase;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -44,6 +46,47 @@ public interface StepListener {
    * @param exception the step exception (not null)
    */
   void stepFailed(Throwable exception);
+
+  /**
+   * {@link StepListener} implementation for {@link System#out}.
+   */
+  class SystemOut implements StepListener {
+    private final String emptyNameReplacement;
+
+    public SystemOut() {
+      this.emptyNameReplacement = "Step";
+    }
+
+    @Override
+    public final void stepStarted(final Map<String, ?> artifacts) {
+      final Keyword keyword = Utils.getKeyword(artifacts);
+      final String name = Utils.getName(artifacts);
+      final String desc = Utils.getDesc(artifacts);
+      final Map<String, Object> params = Utils.getParams(artifacts);
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Step started: ").append(Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement));
+      if (!desc.isEmpty()) {
+        sb.append(" | Description: ").append(desc);
+      }
+      if (!params.isEmpty()) {
+        final TextFormatter textFormatter = XtepsBase.textFormatter();
+        final Map<String, Object> processedParams = new LinkedHashMap<>(params);
+        processedParams.replaceAll((k, v) -> textFormatter.format(v));
+        sb.append(" | Params: ").append(processedParams);
+      }
+      System.out.println(sb);
+    }
+
+    @Override
+    public final void stepPassed() {
+      System.out.println("Step passed");
+    }
+
+    @Override
+    public final void stepFailed(final Throwable exception) {
+      System.out.println("Step failed: " + exception);
+    }
+  }
 
   /**
    * Step listener utils.

@@ -115,7 +115,7 @@ public final class XtepsBase {
     }
   };
 
-  static final Supplier<Config> CONFIG = new Supplier<Config>() {
+  private static final Supplier<Config> CONFIG = new Supplier<Config>() {
     private volatile Config instance = null;
 
     @Override
@@ -176,10 +176,13 @@ public final class XtepsBase {
       if (booleanProperty(properties, "xteps.listener.autodetection", true)) {
         listeners.addAll(listenersBySPI());
       }
+      final StepListener[] listenersArray;
       if (listeners.isEmpty()) {
-        throw new XtepsException("No StepListener implementation found");
+        System.out.println("The Xteps2 framework can not find any StepListener implementation. Steps will be logged to the console.");
+        listenersArray = new StepListener[]{new StepListener.SystemOut()};
+      } else {
+        listenersArray = uniqueByClass(listeners).toArray(new StepListener[0]);
       }
-      final StepListener[] listenersArray = uniqueByClass(listeners).toArray(new StepListener[0]);
       stepReporter = new StepReporter.Default(exceptionHandler, listenersArray);
       if (booleanProperty(properties, "xteps.textFormatter.enabled", true)) {
         textFormatter = new TextFormatter.Default(
