@@ -55,6 +55,11 @@ public class XtepsExtentReports implements StepListener {
     this.emptyNameReplacement = properties.getOrDefault("xteps.extentreports.emptyNameReplacement", "Step");
   }
 
+  /**
+   * Registers given test for current thread.
+   *
+   * @param test the test
+   */
   public static void registerTest(final ExtentTest test) {
     final LinkedList<ExtentTest> nodes = NODES.get();
     if (!nodes.isEmpty()) {
@@ -66,6 +71,9 @@ public class XtepsExtentReports implements StepListener {
     }
   }
 
+  /**
+   * Unregisters current test for current thread.
+   */
   public static void unregisterTest() {
     NODES.remove();
   }
