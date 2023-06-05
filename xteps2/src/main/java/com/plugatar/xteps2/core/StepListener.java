@@ -53,6 +53,9 @@ public interface StepListener {
   class SystemOut implements StepListener {
     private final String emptyNameReplacement;
 
+    /**
+     * Ctor.
+     */
     public SystemOut() {
       this.emptyNameReplacement = "Step";
     }
