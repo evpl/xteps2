@@ -16,11 +16,11 @@
 package com.plugatar.xteps2.core.sc;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.sc.base.BaseNoCtxSC;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
 import com.plugatar.xteps2.core.function.ThRunnable;
 import com.plugatar.xteps2.core.function.ThSupplier;
+import com.plugatar.xteps2.core.sc.base.BaseNoCtxSC;
 
 /**
  * No context step context.

@@ -16,9 +16,9 @@
 package com.plugatar.xteps2.core.sc;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.sc.base.BaseCtxSC;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
+import com.plugatar.xteps2.core.sc.base.BaseCtxSC;
 
 /**
  * Single context step context.

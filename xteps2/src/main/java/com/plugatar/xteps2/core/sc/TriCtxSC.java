@@ -16,11 +16,11 @@
 package com.plugatar.xteps2.core.sc;
 
 import com.plugatar.xteps2.core.XtepsException;
-import com.plugatar.xteps2.core.sc.base.BaseTriCtxSC;
 import com.plugatar.xteps2.core.function.ThConsumer;
 import com.plugatar.xteps2.core.function.ThFunction;
 import com.plugatar.xteps2.core.function.ThTriConsumer;
 import com.plugatar.xteps2.core.function.ThTriFunction;
+import com.plugatar.xteps2.core.sc.base.BaseTriCtxSC;
 
 /**
  * Tri step context.
