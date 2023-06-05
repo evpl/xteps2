@@ -16,7 +16,7 @@
 package com.plugatar.xteps2.core.step;
 
 import com.plugatar.xteps2.core.Keyword;
-import com.plugatar.xteps2.core.StepNotImplementedException;
+import com.plugatar.xteps2.core.StepNotImplementedError;
 import com.plugatar.xteps2.core.StepReporter;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThFunction;
@@ -448,7 +448,7 @@ public interface FunctionStep<C, R> extends
     }
 
     private static <C, R> ThFunction<? super C, ? extends R, ?> notImplementedAction() {
-      return c -> { throw new StepNotImplementedException(); };
+      return c -> { throw new StepNotImplementedError(); };
     }
 
     @Override

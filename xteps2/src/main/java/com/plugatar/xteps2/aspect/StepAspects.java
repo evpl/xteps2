@@ -24,7 +24,7 @@ import com.plugatar.xteps2.annotation.NotImplemented;
 import com.plugatar.xteps2.annotation.Param;
 import com.plugatar.xteps2.annotation.Step;
 import com.plugatar.xteps2.core.Keyword;
-import com.plugatar.xteps2.core.StepNotImplementedException;
+import com.plugatar.xteps2.core.StepNotImplementedError;
 import com.plugatar.xteps2.core.TextFormatException;
 import com.plugatar.xteps2.core.TextFormatter;
 import com.plugatar.xteps2.core.XtepsException;
@@ -93,10 +93,10 @@ public class StepAspects {
    * <em>Before</em> advice for static method annotated with {@link Step} annotation.
    *
    * @param joinPoint the join point
-   * @throws XtepsException              if Xteps configuration is incorrect
-   * @throws TextFormatException         if if it's impossible to format <em>name</em> or <em>desc</em> artifacts
-   *                                     correctly
-   * @throws StepNotImplementedException if method annotated with {@link NotImplemented} annotation
+   * @throws XtepsException          if Xteps configuration is incorrect
+   * @throws TextFormatException     if it's impossible to format <em>name</em> or <em>desc</em> artifacts
+   *                                 correctly
+   * @throws StepNotImplementedError if method annotated with {@link NotImplemented} annotation
    */
   @Before(value = "withStepAnnotation() && staticMethod()")
   public final void staticMethodStepStart(final JoinPoint joinPoint) {
@@ -125,9 +125,9 @@ public class StepAspects {
       replacements
     ));
     if (method.isAnnotationPresent(NotImplemented.class)) {
-      final StepNotImplementedException exception = new StepNotImplementedException();
-      exceptionHandler().handle(exception);
-      throw exception;
+      final StepNotImplementedError error = new StepNotImplementedError();
+      exceptionHandler().handle(error);
+      throw error;
     }
   }
 
@@ -135,10 +135,10 @@ public class StepAspects {
    * <em>Before</em> advice for non-static method annotated with {@link Step} annotation.
    *
    * @param joinPoint the join point
-   * @throws XtepsException              if Xteps configuration is incorrect
-   * @throws TextFormatException         if if it's impossible to format <em>name</em> or <em>desc</em> artifacts
-   *                                     correctly
-   * @throws StepNotImplementedException if method annotated with {@link NotImplemented} annotation
+   * @throws XtepsException          if Xteps configuration is incorrect
+   * @throws TextFormatException     if it's impossible to format <em>name</em> or <em>desc</em> artifacts
+   *                                 correctly
+   * @throws StepNotImplementedError if method annotated with {@link NotImplemented} annotation
    */
   @Before(value = "withStepAnnotation() && nonStaticMethod()")
   public final void nonStaticMethodStepStart(final JoinPoint joinPoint) {
@@ -172,9 +172,9 @@ public class StepAspects {
       replacements
     ));
     if (method.isAnnotationPresent(NotImplemented.class)) {
-      final StepNotImplementedException exception = new StepNotImplementedException();
-      exceptionHandler().handle(exception);
-      throw exception;
+      final StepNotImplementedError error = new StepNotImplementedError();
+      exceptionHandler().handle(error);
+      throw error;
     }
   }
 
@@ -182,10 +182,10 @@ public class StepAspects {
    * <em>Before</em> advice for constructor annotated with {@link Step} annotation.
    *
    * @param joinPoint the join point
-   * @throws XtepsException              if Xteps configuration is incorrect
-   * @throws TextFormatException         if if it's impossible to format <em>name</em> or <em>desc</em> artifacts
-   *                                     correctly
-   * @throws StepNotImplementedException if method annotated with {@link NotImplemented} annotation
+   * @throws XtepsException          if Xteps configuration is incorrect
+   * @throws TextFormatException     if it's impossible to format <em>name</em> or <em>desc</em> artifacts
+   *                                 correctly
+   * @throws StepNotImplementedError if constructor annotated with {@link NotImplemented} annotation
    */
   @Before(value = "withStepAnnotation() && constructor()")
   public final void constructorStepStart(final JoinPoint joinPoint) {
@@ -218,9 +218,9 @@ public class StepAspects {
       replacements
     ));
     if (ctor.isAnnotationPresent(NotImplemented.class)) {
-      final StepNotImplementedException exception = new StepNotImplementedException();
-      exceptionHandler().handle(exception);
-      throw exception;
+      final StepNotImplementedError error = new StepNotImplementedError();
+      exceptionHandler().handle(error);
+      throw error;
     }
   }
 

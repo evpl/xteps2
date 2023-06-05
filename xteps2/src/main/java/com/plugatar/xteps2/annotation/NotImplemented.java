@@ -15,7 +15,7 @@
  */
 package com.plugatar.xteps2.annotation;
 
-import com.plugatar.xteps2.core.StepNotImplementedException;
+import com.plugatar.xteps2.core.StepNotImplementedError;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,11 +25,11 @@ import java.lang.annotation.Target;
 
 /**
  * Marker indicating that the step is not implemented. If a method / constructor is annotated with
- * {@link Step} annotation and {@link NotImplemented} annotation then an {@link StepNotImplementedException}
+ * {@link Step} annotation and {@link NotImplemented} annotation then an {@link StepNotImplementedError}
  * will be thrown when the method / constructor is called.
  *
  * @see Step
- * @see StepNotImplementedException
+ * @see StepNotImplementedError
  */
 @Documented
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})

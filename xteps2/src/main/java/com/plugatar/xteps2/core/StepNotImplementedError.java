@@ -16,15 +16,15 @@
 package com.plugatar.xteps2.core;
 
 /**
- * Step not implemented exception.
+ * Step not implemented error.
  */
-public class StepNotImplementedException extends RuntimeException {
+public class StepNotImplementedError extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
   /**
    * Ctor.
    */
-  public StepNotImplementedException() {
+  public StepNotImplementedError() {
     super();
   }
 
@@ -33,7 +33,7 @@ public class StepNotImplementedException extends RuntimeException {
    *
    * @param message the message
    */
-  public StepNotImplementedException(final String message) {
+  public StepNotImplementedError(final String message) {
     super(message);
   }
 
@@ -42,7 +42,7 @@ public class StepNotImplementedException extends RuntimeException {
    *
    * @param cause the cause
    */
-  public StepNotImplementedException(final Throwable cause) {
+  public StepNotImplementedError(final Throwable cause) {
     super(cause);
   }
 
@@ -52,8 +52,8 @@ public class StepNotImplementedException extends RuntimeException {
    * @param message the message
    * @param cause   the cause
    */
-  public StepNotImplementedException(final String message,
-                                     final Throwable cause) {
+  public StepNotImplementedError(final String message,
+                                 final Throwable cause) {
     super(message, cause);
   }
 }

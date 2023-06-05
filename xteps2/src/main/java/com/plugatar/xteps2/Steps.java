@@ -16,7 +16,7 @@
 package com.plugatar.xteps2;
 
 import com.plugatar.xteps2.core.Keyword;
-import com.plugatar.xteps2.core.StepNotImplementedException;
+import com.plugatar.xteps2.core.StepNotImplementedError;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThRunnable;
 import com.plugatar.xteps2.core.function.ThSupplier;
@@ -666,56 +666,56 @@ public final class Steps {
   //region Not implemented step methods
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param <R> the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   * @throws StepNotImplementedException in any case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   * @throws StepNotImplementedError in any case
    */
   public static <R> R step() {
     return new SupplierStep.Of<R>().get();
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param keyword the step keyword
    * @param <R>     the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code keyword} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code keyword} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final Keyword keyword) {
     return new SupplierStep.Of<R>(keyword).get();
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param name the step name
    * @param <R>  the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code name} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code name} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final String name) {
     return new SupplierStep.Of<R>(name).get();
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param keyword the step keyword
    * @param name    the step name
    * @param <R>     the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code keyword} arg is null
-   *                                     or if {@code name} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code keyword} arg is null
+   *                                 or if {@code name} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final Keyword keyword,
                            final String name) {
@@ -723,16 +723,16 @@ public final class Steps {
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param name the step name
    * @param desc the step description
    * @param <R>  the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code name} arg is null
-   *                                     or if {@code desc} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code name} arg is null
+   *                                 or if {@code desc} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final String name,
                            final String desc) {
@@ -740,18 +740,18 @@ public final class Steps {
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param keyword the step keyword
    * @param name    the step name
    * @param desc    the step description
    * @param <R>     the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code keyword} arg is null
-   *                                     or if {@code name} arg is null
-   *                                     or if {@code desc} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code keyword} arg is null
+   *                                 or if {@code name} arg is null
+   *                                 or if {@code desc} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final Keyword keyword,
                            final String name,
@@ -760,16 +760,16 @@ public final class Steps {
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param name   the step name
    * @param params the step params
    * @param <R>    the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code name} arg is null
-   *                                     or if {@code params} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code name} arg is null
+   *                                 or if {@code params} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final String name,
                            final Map<String, ?> params) {
@@ -777,18 +777,18 @@ public final class Steps {
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param keyword the step keyword
    * @param name    the step name
    * @param params  the step params
    * @param <R>     the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code keyword} arg is null
-   *                                     or if {@code name} arg is null
-   *                                     or if {@code params} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code keyword} arg is null
+   *                                 or if {@code name} arg is null
+   *                                 or if {@code params} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final Keyword keyword,
                            final String name,
@@ -797,18 +797,18 @@ public final class Steps {
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param name   the step name
    * @param params the step params
    * @param desc   the step description
    * @param <R>    the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code name} arg is null
-   *                                     or if {@code params} arg is null
-   *                                     or if {@code desc} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code name} arg is null
+   *                                 or if {@code params} arg is null
+   *                                 or if {@code desc} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final String name,
                            final Map<String, ?> params,
@@ -817,7 +817,7 @@ public final class Steps {
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param keyword the step keyword
    * @param name    the step name
@@ -825,12 +825,12 @@ public final class Steps {
    * @param desc    the step description
    * @param <R>     the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code keyword} arg is null
-   *                                     or if {@code name} arg is null
-   *                                     or if {@code params} arg is null
-   *                                     or if {@code desc} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code keyword} arg is null
+   *                                 or if {@code name} arg is null
+   *                                 or if {@code params} arg is null
+   *                                 or if {@code desc} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final Keyword keyword,
                            final String name,
@@ -840,14 +840,14 @@ public final class Steps {
   }
 
   /**
-   * Performs a step that throws a {@link StepNotImplementedException}.
+   * Performs a step that throws a {@link StepNotImplementedError}.
    *
    * @param artifacts the step artifacts
    * @param <R>       the type of the step result
    * @return step result
-   * @throws XtepsException              if Xteps configuration is incorrect
-   *                                     or if {@code artifacts} arg is null
-   * @throws StepNotImplementedException in any other case
+   * @throws XtepsException          if Xteps configuration is incorrect
+   *                                 or if {@code artifacts} arg is null
+   * @throws StepNotImplementedError in any other case
    */
   public static <R> R step(final Map<String, ?> artifacts) {
     return new SupplierStep.Of<R>(artifacts).get();

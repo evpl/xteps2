@@ -20,15 +20,15 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link StepNotImplementedException}.
+ * Tests for {@link StepNotImplementedError}.
  */
-final class StepNotImplementedExceptionTest {
+final class StepNotImplementedErrorTest {
 
   @Test
   void emptyCtor() {
-    final StepNotImplementedException exception = new StepNotImplementedException();
+    final StepNotImplementedError error = new StepNotImplementedError();
 
-    assertThat(exception)
+    assertThat(error)
       .hasMessage(null)
       .hasCause(null);
   }
@@ -36,9 +36,9 @@ final class StepNotImplementedExceptionTest {
   @Test
   void messageCtor() {
     final String message = "message";
-    final StepNotImplementedException exception = new StepNotImplementedException(message);
+    final StepNotImplementedError error = new StepNotImplementedError(message);
 
-    assertThat(exception)
+    assertThat(error)
       .hasMessage(message)
       .hasCause(null);
   }
@@ -46,9 +46,9 @@ final class StepNotImplementedExceptionTest {
   @Test
   void causeCtor() {
     final Throwable cause = new RuntimeException("cause message");
-    final StepNotImplementedException exception = new StepNotImplementedException(cause);
+    final StepNotImplementedError error = new StepNotImplementedError(cause);
 
-    assertThat(exception)
+    assertThat(error)
       .hasMessage("java.lang.RuntimeException: cause message")
       .hasCause(cause);
   }
@@ -57,9 +57,9 @@ final class StepNotImplementedExceptionTest {
   void messageAndCauseCtor() {
     final String message = "message";
     final Throwable cause = new RuntimeException("cause message");
-    final StepNotImplementedException exception = new StepNotImplementedException(message, cause);
+    final StepNotImplementedError error = new StepNotImplementedError(message, cause);
 
-    assertThat(exception)
+    assertThat(error)
       .hasMessage(message)
       .hasCause(cause);
   }

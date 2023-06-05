@@ -16,7 +16,7 @@
 package com.plugatar.xteps2.core.step;
 
 import com.plugatar.xteps2.core.Keyword;
-import com.plugatar.xteps2.core.StepNotImplementedException;
+import com.plugatar.xteps2.core.StepNotImplementedError;
 import com.plugatar.xteps2.core.StepReporter;
 import com.plugatar.xteps2.core.XtepsException;
 import com.plugatar.xteps2.core.function.ThTriConsumer;
@@ -446,7 +446,7 @@ public interface TriConsumerStep<C1, C2, C3> extends
     }
 
     private static <C1, C2, C3> ThTriConsumer<? super C1, ? super C2, ? super C3, ?> notImplementedAction() {
-      return (c1, c2, c3) -> { throw new StepNotImplementedException(); };
+      return (c1, c2, c3) -> { throw new StepNotImplementedError(); };
     }
 
     @Override
