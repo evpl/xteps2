@@ -37,8 +37,7 @@ public class XtepsTestIT implements StepListener {
    * Zero-argument public ctor.
    */
   public XtepsTestIT() {
-    final Map<String, String> properties = XtepsBase.properties();
-    this.emptyNameReplacement = properties.getOrDefault("xteps.testit.emptyNameReplacement", "Step");
+    this.emptyNameReplacement = "Step";
   }
 
   @Override

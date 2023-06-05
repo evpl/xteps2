@@ -15,7 +15,6 @@
  */
 package com.plugatar.xteps2.qase;
 
-import com.plugatar.xteps2.XtepsBase;
 import com.plugatar.xteps2.core.Keyword;
 import com.plugatar.xteps2.core.StepListener;
 import io.qase.api.StepStorage;
@@ -34,8 +33,7 @@ public class XtepsQase implements StepListener {
    * Zero-argument public ctor.
    */
   public XtepsQase() {
-    final Map<String, String> properties = XtepsBase.properties();
-    this.emptyNameReplacement = properties.getOrDefault("xteps.qase.emptyNameReplacement", "Step");
+    this.emptyNameReplacement = "Step";
   }
 
   @Override

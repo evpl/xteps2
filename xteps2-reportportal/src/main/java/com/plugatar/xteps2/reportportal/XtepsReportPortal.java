@@ -38,8 +38,7 @@ public class XtepsReportPortal implements StepListener {
    * Zero-argument public ctor.
    */
   public XtepsReportPortal() {
-    final Map<String, String> properties = XtepsBase.properties();
-    this.emptyNameReplacement = properties.getOrDefault("xteps.reportportal.emptyNameReplacement", "Step");
+    this.emptyNameReplacement = "Step";
   }
 
   @Override

@@ -40,9 +40,8 @@ public class XtepsAllure implements StepListener {
    * Zero-argument public ctor.
    */
   public XtepsAllure() {
-    final Map<String, String> properties = XtepsBase.properties();
-    this.emptyNameReplacement = properties.getOrDefault("xteps.allure.emptyNameReplacement", "Step");
-    this.descAttachmentName = properties.getOrDefault("xteps.allure.emptyNameReplacement", "Description");
+    this.emptyNameReplacement = "Step";
+    this.descAttachmentName = "Description";
   }
 
   @Override
