@@ -34,6 +34,19 @@ import java.util.Map;
 /**
  * Utility class. Contains methods for immediately performing steps.
  * <p>
+ * Empty step methods:
+ * <ul>
+ * <li>{@link #emptyStep(Keyword)}</li>
+ * <li>{@link #emptyStep(String)}</li>
+ * <li>{@link #emptyStep(Keyword, String)}</li>
+ * <li>{@link #emptyStep(String, String)}</li>
+ * <li>{@link #emptyStep(Keyword, String, String)}</li>
+ * <li>{@link #emptyStep(String, Map)}</li>
+ * <li>{@link #emptyStep(Keyword, String, Map)}</li>
+ * <li>{@link #emptyStep(String, Map, String)}</li>
+ * <li>{@link #emptyStep(Keyword, String, Map, String)}</li>
+ * <li>{@link #emptyStep(Map)}</li>
+ * </ul>
  * Runnable step methods:
  * <ul>
  * <li>{@link #step(ThRunnable)}</li>
@@ -95,6 +108,156 @@ public final class Steps {
    */
   private Steps() {
   }
+
+  //region Empty step methods
+
+  /**
+   * Performs step without action.
+   *
+   * @param keyword the step keyword
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code keyword} arg is null
+   */
+  public static void emptyStep(final Keyword keyword) {
+    new RunnableStep.Of(keyword, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param name the step name
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code name} arg is null
+   */
+  public static void emptyStep(final String name) {
+    new RunnableStep.Of(name, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param keyword the step keyword
+   * @param name    the step name
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code keyword} arg is null
+   *                        or if {@code name} arg is null
+   */
+  public static void emptyStep(final Keyword keyword,
+                               final String name) {
+    new RunnableStep.Of(keyword, name, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param name the step name
+   * @param desc the step description
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code name} arg is null
+   *                        or if {@code desc} arg is null
+   */
+  public static void emptyStep(final String name,
+                               final String desc) {
+    new RunnableStep.Of(name, desc, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param keyword the step keyword
+   * @param name    the step name
+   * @param desc    the step description
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code keyword} arg is null
+   *                        or if {@code name} arg is null
+   *                        or if {@code desc} arg is null
+   */
+  public static void emptyStep(final Keyword keyword,
+                               final String name,
+                               final String desc) {
+    new RunnableStep.Of(keyword, name, desc, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param name   the step name
+   * @param params the step params
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code name} arg is null
+   *                        or if {@code params} arg is null
+   */
+  public static void emptyStep(final String name,
+                               final Map<String, ?> params) {
+    new RunnableStep.Of(name, params, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param keyword the step keyword
+   * @param name    the step name
+   * @param params  the step params
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code keyword} arg is null
+   *                        or if {@code name} arg is null
+   *                        or if {@code params} arg is null
+   */
+  public static void emptyStep(final Keyword keyword,
+                               final String name,
+                               final Map<String, ?> params) {
+    new RunnableStep.Of(keyword, name, params, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param name   the step name
+   * @param params the step params
+   * @param desc   the step description
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code name} arg is null
+   *                        or if {@code params} arg is null
+   *                        or if {@code desc} arg is null
+   */
+  public static void emptyStep(final String name,
+                               final Map<String, ?> params,
+                               final String desc) {
+    new RunnableStep.Of(name, params, desc, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param keyword the step keyword
+   * @param name    the step name
+   * @param params  the step params
+   * @param desc    the step description
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code keyword} arg is null
+   *                        or if {@code name} arg is null
+   *                        or if {@code params} arg is null
+   *                        or if {@code desc} arg is null
+   */
+  public static void emptyStep(final Keyword keyword,
+                               final String name,
+                               final Map<String, ?> params,
+                               final String desc) {
+    new RunnableStep.Of(keyword, name, params, desc, () -> { }).run();
+  }
+
+  /**
+   * Performs step without action.
+   *
+   * @param artifacts the step artifacts
+   * @throws XtepsException if Xteps configuration is incorrect
+   *                        or if {@code artifacts} arg is null
+   */
+  public static void emptyStep(final Map<String, ?> artifacts) {
+    new RunnableStep.Of(artifacts, () -> { }).run();
+  }
+
+  //endregion
 
   //region Runnable step methods
 
@@ -278,7 +441,7 @@ public final class Steps {
    * @param action    the step action
    * @throws XtepsException if Xteps configuration is incorrect
    *                        or if {@code artifacts} arg is null
-   *                        or if {@code name} arg is null
+   *                        or if {@code action} arg is null
    */
   public static void step(final Map<String, ?> artifacts,
                           final ThRunnable<?> action) {
