@@ -26,18 +26,37 @@ import static com.plugatar.xteps2.XtepsBase.properties;
 /**
  * Default keywords.
  * <p>
+ * Enum:
+ * <ul>
+ * <li>{@link #NONE}</li>
+ * <li>{@link #FEATURE}</li>
+ * <li>{@link #BACKGROUND}</li>
+ * <li>{@link #SCENARIO}</li>
+ * <li>{@link #SCENARIO_OUTLINE}</li>
+ * <li>{@link #GIVEN}</li>
+ * <li>{@link #WHEN}</li>
+ * <li>{@link #THEN}</li>
+ * <li>{@link #AND}</li>
+ * <li>{@link #BUT}</li>
+ * <li>{@link #ASTERISK}</li>
+ * </ul>
+ * <p>
  * Methods:
  * <ul>
+ * <li>{@link #feature()}</li>
  * <li>{@link #background()}</li>
  * <li>{@link #scenario()}</li>
+ * <li>{@link #scenarioOutline()}</li>
  * <li>{@link #given()}</li>
  * <li>{@link #when()}</li>
  * <li>{@link #then()}</li>
  * <li>{@link #and()}</li>
  * <li>{@link #but()}</li>
  * <li>{@link #asterisk()}</li>
+ * <li>{@link #feature(StepObject)}</li>
  * <li>{@link #background(StepObject)}</li>
  * <li>{@link #scenario(StepObject)}</li>
+ * <li>{@link #scenarioOutline(StepObject)}</li>
  * <li>{@link #given(StepObject)}</li>
  * <li>{@link #when(StepObject)}</li>
  * <li>{@link #then(StepObject)}</li>

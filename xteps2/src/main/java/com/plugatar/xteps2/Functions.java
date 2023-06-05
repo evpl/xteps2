@@ -27,6 +27,16 @@ import com.plugatar.xteps2.core.function.ThTriFunction;
 
 /**
  * Utility class. Contains methods for lambda functions converting.
+ * <p>
+ * Methods:
+ * <ul>
+ * <li>{@link #runnable(Object, ThConsumer)}</li>
+ * <li>{@link #runnable(Object, Object, ThBiConsumer)}</li>
+ * <li>{@link #runnable(Object, Object, Object, ThTriConsumer)}</li>
+ * <li>{@link #supplier(Object, ThFunction)}</li>
+ * <li>{@link #supplier(Object, Object, ThBiFunction)}</li>
+ * <li>{@link #supplier(Object, Object, Object, ThTriFunction)}</li>
+ * </ul>
  */
 public final class Functions {
 
@@ -43,6 +53,7 @@ public final class Functions {
    * @param consumer the consumer
    * @param <T>      the type of the input argument
    * @return {@code ThRunnable} that wraps given consumer
+   * @throws XtepsException if {@code consumer} arg is null
    */
   public static <T> ThRunnable<RuntimeException> runnable(final T t,
                                                           final ThConsumer<? super T, ?> consumer) {
@@ -59,6 +70,7 @@ public final class Functions {
    * @param <T>      the type of the first input argument
    * @param <U>      the type of the second input argument
    * @return {@code ThRunnable} that wraps given consumer
+   * @throws XtepsException if {@code consumer} arg is null
    */
   public static <T, U> ThRunnable<RuntimeException> runnable(final T t,
                                                              final U u,
@@ -78,6 +90,7 @@ public final class Functions {
    * @param <U>      the type of the second input argument
    * @param <V>      the type of the third input argument
    * @return {@code ThRunnable} that wraps given consumer
+   * @throws XtepsException if {@code consumer} arg is null
    */
   public static <T, U, V> ThRunnable<RuntimeException> runnable(final T t,
                                                                 final U u,
@@ -95,6 +108,7 @@ public final class Functions {
    * @param <T>      the type of the input argument
    * @param <R>      the type of the result
    * @return {@code ThSupplier} that wraps given function
+   * @throws XtepsException if {@code function} arg is null
    */
   public static <T, R> ThSupplier<R, RuntimeException> supplier(final T t,
                                                                 final ThFunction<? super T, ? extends R, ?> function) {
@@ -112,6 +126,7 @@ public final class Functions {
    * @param <U>      the type of the second input argument
    * @param <R>      the type of the result
    * @return {@code ThSupplier} that wraps given function
+   * @throws XtepsException if {@code function} arg is null
    */
   public static <T, U, R> ThSupplier<R, RuntimeException> supplier(final T t,
                                                                    final U u,
@@ -132,6 +147,7 @@ public final class Functions {
    * @param <V>      the type of the third input argument
    * @param <R>      the type of the result
    * @return {@code ThSupplier} that wraps given function
+   * @throws XtepsException if {@code function} arg is null
    */
   public static <T, U, V, R> ThSupplier<R, RuntimeException> supplier(final T t,
                                                                       final U u,
