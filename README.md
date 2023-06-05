@@ -1,7 +1,7 @@
 # Xteps2
 
-[![Maven Central](https://img.shields.io/badge/maven--central-0.2-brightgreen?style=flat)](https://central.sonatype.com/namespace/com.plugatar.xteps2)
-[![Javadoc](https://img.shields.io/badge/javadoc-0.2-blue?style=flat)](https://javadoc.io/doc/com.plugatar.xteps2)
+[![Maven Central](https://img.shields.io/badge/maven--central-1.0-brightgreen?style=flat)](https://central.sonatype.com/namespace/com.plugatar.xteps2)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.0-blue?style=flat)](https://javadoc.io/doc/com.plugatar.xteps2)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/evpl/xteps2/tests.yml)
 
