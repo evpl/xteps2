@@ -30,6 +30,11 @@ public interface NoCtxSC extends BaseNoCtxSC<NoCtxSC> {
   @Override
   <R> CtxSC<R> with(ThSupplier<? extends R, ?> action);
 
+  /**
+   * Returns {@code NoCtxSC} instance.
+   *
+   * @return {@code NoCtxSC} instance
+   */
   static NoCtxSC instance() {
     return Of.INSTANCE;
   }
