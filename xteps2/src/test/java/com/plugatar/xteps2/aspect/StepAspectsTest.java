@@ -45,7 +45,7 @@ final class StepAspectsTest {
     classWithDefaultStep.nonStaticMethod(1, "value");
 
     /* stepStarted method */
-    final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
+    final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifacts();
     assertThat(StepListener.Utils.getName(artifacts)).isEqualTo("Custom name");
     assertThat(StepListener.Utils.getDesc(artifacts)).isEqualTo("Default desc");
     assertThat(StepListener.Utils.getParams(artifacts)).containsExactly(
@@ -78,7 +78,7 @@ final class StepAspectsTest {
     ClassWithDefaultStep.staticMethod(1, "value");
 
     /* stepStarted method */
-    final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
+    final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifacts();
     assertThat(StepListener.Utils.getName(artifacts)).isEqualTo("Custom name");
     assertThat(StepListener.Utils.getDesc(artifacts)).isEqualTo("Default desc");
     assertThat(StepListener.Utils.getParams(artifacts)).containsExactly(
@@ -110,7 +110,7 @@ final class StepAspectsTest {
     new ClassWithDefaultStep(1, "value");
 
     /* stepStarted method */
-    final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifact();
+    final Map<String, ?> artifacts = StaticStepListener.stepStartedArtifacts();
     assertThat(StepListener.Utils.getName(artifacts)).isEqualTo("Custom name");
     assertThat(StepListener.Utils.getDesc(artifacts)).isEqualTo("Default desc");
     assertThat(StepListener.Utils.getParams(artifacts)).containsExactly(

@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -44,7 +43,7 @@ final class XtepsBaseTest {
 
     XtepsBase.stepReporter().executeStep(stepArtifacts, stepAction);
     /* stepStarted method */
-    assertThat(StaticStepListener.stepStartedArtifact()).isSameAs(stepArtifacts);
+    assertThat(StaticStepListener.stepStartedArtifacts()).isSameAs(stepArtifacts);
     /* stepPassed method */
     StaticStepListener.clear();
   }
@@ -58,13 +57,9 @@ final class XtepsBaseTest {
     assertThatCode(() -> XtepsBase.stepReporter().executeStep(stepArtifacts, stepAction))
       .isSameAs(stepException);
     /* stepStarted method */
-    assertThat(StaticStepListener.stepStartedArtifact()).isSameAs(stepArtifacts);
+    assertThat(StaticStepListener.stepStartedArtifacts()).isSameAs(stepArtifacts);
     /* stepFailed method */
     assertThat(StaticStepListener.stepFailedException()).isSameAs(stepException);
     StaticStepListener.clear();
-  }
-
-  private static Pattern uuidPattern() {
-    return Pattern.compile("^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$");
   }
 }

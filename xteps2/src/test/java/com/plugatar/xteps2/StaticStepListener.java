@@ -21,8 +21,6 @@ import java.util.Map;
 
 public final class StaticStepListener implements StepListener {
   private static Map<String, ?> stepStartedArtifacts = null;
-  private static String stepPassedUUID = null;
-  private static String stepFailedUUID = null;
   private static Throwable stepFailedException = null;
 
   public StaticStepListener() {
@@ -30,26 +28,12 @@ public final class StaticStepListener implements StepListener {
 
   public static void clear() {
     stepStartedArtifacts = null;
-    stepPassedUUID = null;
-    stepFailedUUID = null;
     stepFailedException = null;
   }
 
-  public static Map<String, ?> stepStartedArtifact() {
+  public static Map<String, ?> stepStartedArtifacts() {
     final Map<String, ?> last = stepStartedArtifacts;
     stepStartedArtifacts = null;
-    return last;
-  }
-
-  public static String stepPassedUUID() {
-    final String last = stepPassedUUID;
-    stepPassedUUID = null;
-    return last;
-  }
-
-  public static String stepFailedUUID() {
-    final String last = stepFailedUUID;
-    stepFailedUUID = null;
     return last;
   }
 
