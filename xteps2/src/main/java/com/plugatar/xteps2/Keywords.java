@@ -54,43 +54,43 @@ public enum Keywords implements Keyword {
   /**
    * The <em>Feature</em> keyword.
    */
-  FEATURE(stringProperty(properties(), "xteps.keywords.feature", "Feature")),
+  FEATURE(stringProperty(properties(), "xteps.keyword.feature", "Feature")),
   /**
    * The <em>Background</em> keyword.
    */
-  BACKGROUND(stringProperty(properties(), "xteps.keywords.background", "Background")),
+  BACKGROUND(stringProperty(properties(), "xteps.keyword.background", "Background")),
   /**
    * The <em>Scenario</em> keyword.
    */
-  SCENARIO(stringProperty(properties(), "xteps.keywords.scenario", "Scenario")),
+  SCENARIO(stringProperty(properties(), "xteps.keyword.scenario", "Scenario")),
   /**
    * The <em>Scenario Outline</em> keyword.
    */
-  SCENARIO_OUTLINE(stringProperty(properties(), "xteps.keywords.scenarioOutline", "Scenario Outline")),
+  SCENARIO_OUTLINE(stringProperty(properties(), "xteps.keyword.scenarioOutline", "Scenario Outline")),
   /**
    * The <em>Given</em> keyword.
    */
-  GIVEN(stringProperty(properties(), "xteps.keywords.given", "Given")),
+  GIVEN(stringProperty(properties(), "xteps.keyword.given", "Given")),
   /**
    * The <em>When</em> keyword.
    */
-  WHEN(stringProperty(properties(), "xteps.keywords.when", "When")),
+  WHEN(stringProperty(properties(), "xteps.keyword.when", "When")),
   /**
    * The <em>Then</em> keyword.
    */
-  THEN(stringProperty(properties(), "xteps.keywords.then", "Then")),
+  THEN(stringProperty(properties(), "xteps.keyword.then", "Then")),
   /**
    * The <em>And</em> keyword.
    */
-  AND(stringProperty(properties(), "xteps.keywords.and", "And")),
+  AND(stringProperty(properties(), "xteps.keyword.and", "And")),
   /**
    * The <em>But</em> keyword.
    */
-  BUT(stringProperty(properties(), "xteps.keywords.but", "But")),
+  BUT(stringProperty(properties(), "xteps.keyword.but", "But")),
   /**
    * The <em>*</em> keyword.
    */
-  ASTERISK(stringProperty(properties(), "xteps.keywords.asterisk", "*"));
+  ASTERISK(stringProperty(properties(), "xteps.keyword.asterisk", "*"));
 
   private final String keywordStr;
 
