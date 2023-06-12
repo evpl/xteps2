@@ -87,6 +87,11 @@
       </dependency>
       <dependency>
         <groupId>com.plugatar.xteps2</groupId>
+        <artifactId>xteps2-extentreports</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.plugatar.xteps2</groupId>
         <artifactId>xteps2-qase</artifactId>
         <version>${project.version}</version>
       </dependency>
