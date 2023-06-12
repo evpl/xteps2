@@ -7,7 +7,7 @@
 
 ## How to use
 
-Requires Java 8+ version or Kotlin JVM. Just add suitable dependency.
+Requires Java 8+ version or Kotlin JVM.
 
 | Module                 | Maven central                                                                                                                                                                  | Javadoc                                                                                                                                     |
 |------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
@@ -45,9 +45,13 @@ dependencies {
 }
 ```
 
+## Code examples
+
+You can find code examples in the [xteps2-examples repository](https://github.com/evpl/xteps2-examples).
+
 ## Configuration
 
-There are two ways to load parameters. Be aware that higher source override lower one - properties from file can be
+There are two ways to use parameters. Be aware that higher source override lower one - properties from file can be
 overridden by system properties.
 
 | Priority | Source                               |
