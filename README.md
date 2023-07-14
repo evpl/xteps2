@@ -1,7 +1,7 @@
 # Xteps2
 
-[![Maven Central](https://img.shields.io/badge/maven--central-1.0-brightgreen?style=flat)](https://central.sonatype.com/namespace/com.plugatar.xteps2)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.0-blue?style=flat)](https://javadoc.io/doc/com.plugatar.xteps2)
+[![Maven Central](https://img.shields.io/badge/maven--central-1.1-brightgreen?style=flat)](https://central.sonatype.com/namespace/com.plugatar.xteps2)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.1-blue?style=flat)](https://javadoc.io/doc/com.plugatar.xteps2)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/evpl/xteps2/tests.yml)
 
@@ -16,6 +16,7 @@ Requires Java 8+ version or Kotlin JVM.
 | `xteps2-extentreports` | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://central.sonatype.com/artifact/com.plugatar.xteps2/xteps2-extentreports) | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-extentreports) |
 | `xteps2-qase`          | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://central.sonatype.com/artifact/com.plugatar.xteps2/xteps2-qase)          | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-qase)          |
 | `xteps2-reportportal`  | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://central.sonatype.com/artifact/com.plugatar.xteps2/xteps2-reportportal)  | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-reportportal)  |
+| `xteps2-selenide`      | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://central.sonatype.com/artifact/com.plugatar.xteps2/xteps2-selenide)      | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-selenide)      |
 | `xteps2-testit`        | [![Maven Central](https://img.shields.io/badge/-maven--central-brightgreen?style=flat-square)](https://central.sonatype.com/artifact/com.plugatar.xteps2/xteps2-testit)        | [![Javadoc](https://img.shields.io/badge/-javadoc-blue?style=flat-square)](https://javadoc.io/doc/com.plugatar.xteps2/xteps2-testit)        |
 
 Maven:
@@ -24,8 +25,8 @@ Maven:
 
 <dependency>
   <groupId>com.plugatar.xteps2</groupId>
-  <artifactId>{artifact name from table}</artifactId>
-  <version>1.0</version>
+  <artifactId>{module name}</artifactId>
+  <version>1.1</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -34,7 +35,7 @@ Gradle:
 
 ```groovy
 dependencies {
-    testImplementation 'com.plugatar.xteps2:{artifact name from table}:1.0'
+    testImplementation 'com.plugatar.xteps2:{module name}:1.1'
 }
 ```
 
@@ -42,7 +43,7 @@ Kotlin DSL:
 
 ```groovy
 dependencies {
-    testImplementation("com.plugatar.xteps2:{artifact name from table}:1.0")
+    testImplementation("com.plugatar.xteps2:{module name}:1.1")
 }
 ```
 

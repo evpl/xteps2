@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1
+## 1.1 (released 14.07.2022)
 
 * PR #35 added xteps-selenide module
 * PR #27 #33 #34 Bump com.epam.reportportal:client-java from 5.1.18 to 5.1.22
