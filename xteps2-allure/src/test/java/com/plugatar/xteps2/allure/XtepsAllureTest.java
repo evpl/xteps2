@@ -44,7 +44,6 @@ final class XtepsAllureTest {
     params.put("param1", 1);
     params.put("param2", 'a');
     final Map<String, Object> artifacts = new HashMap<>();
-    artifacts.put(keywordArtifact(), new Keyword.Of("test keyword"));
     artifacts.put(nameArtifact(), "step name");
     artifacts.put(descArtifact(), "step description");
     artifacts.put(paramsArtifact(), params);
@@ -53,7 +52,7 @@ final class XtepsAllureTest {
     /* stepStarted method */
     listener.stepStarted(artifacts);
     Allure.getLifecycle().updateStep(stepResult::set);
-    assertThat(stepResult.get().getName()).isEqualTo("test keyword step name");
+    assertThat(stepResult.get().getName()).isEqualTo("step name");
     assertThat(stepResult.get().getDescription()).isEqualTo("step description");
     assertThat(stepResult.get().getParameters()).containsExactly(
       new Parameter().setName("param1").setValue("1"),
@@ -75,7 +74,6 @@ final class XtepsAllureTest {
     params.put("param1", 1);
     params.put("param2", 'a');
     final Map<String, Object> artifacts = new HashMap<>();
-    artifacts.put(keywordArtifact(), new Keyword.Of("test keyword"));
     artifacts.put(nameArtifact(), "step name");
     artifacts.put(descArtifact(), "step description");
     artifacts.put(paramsArtifact(), params);
@@ -85,7 +83,7 @@ final class XtepsAllureTest {
     /* stepStarted method */
     listener.stepStarted(artifacts);
     Allure.getLifecycle().updateStep(stepResult::set);
-    assertThat(stepResult.get().getName()).isEqualTo("test keyword step name");
+    assertThat(stepResult.get().getName()).isEqualTo("step name");
     assertThat(stepResult.get().getDescription()).isEqualTo("step description");
     assertThat(stepResult.get().getParameters()).containsExactly(
       new Parameter().setName("param1").setValue("1"),
@@ -98,5 +96,37 @@ final class XtepsAllureTest {
     listener.stepFailed(stepException);
     Allure.getLifecycle().updateStep(stepResult::set);
     assertThat(stepResult.get()).isNull();
+  }
+
+  @Test
+  void stepWithKeyword() {
+    final XtepsAllure listener = new XtepsAllure();
+    final Map<String, Object> artifacts = new HashMap<>();
+    artifacts.put(keywordArtifact(), new Keyword.Of("step keyword"));
+    artifacts.put(nameArtifact(), "step name");
+    artifacts.put(descArtifact(), "step description");
+    final AtomicReference<StepResult> stepResult = new AtomicReference<>();
+
+    listener.stepStarted(artifacts);
+    Allure.getLifecycle().updateStep(stepResult::set);
+    listener.stepPassed();
+    assertThat(stepResult.get().getName()).isEqualTo("step keyword step name");
+    assertThat(stepResult.get().getDescription()).isEqualTo("step description");
+  }
+
+  @Test
+  void emptyNameAndDescription() {
+    final XtepsAllure listener = new XtepsAllure();
+    final Map<String, Object> artifacts = new HashMap<>();
+    artifacts.put(keywordArtifact(), "");
+    artifacts.put(nameArtifact(), "");
+    artifacts.put(descArtifact(), "");
+    final AtomicReference<StepResult> stepResult = new AtomicReference<>();
+
+    listener.stepStarted(artifacts);
+    Allure.getLifecycle().updateStep(stepResult::set);
+    listener.stepPassed();
+    assertThat(stepResult.get().getName()).isEqualTo("Step");
+    assertThat(stepResult.get().getDescription()).isNull();
   }
 }
