@@ -42,9 +42,11 @@ public class XtepsQase implements StepListener {
     final String name = Utils.getName(artifacts);
     final String desc = Utils.getDesc(artifacts);
     StepStorage.startStep();
-    StepStorage.getCurrentStep()
-      .action(Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement))
-      .comment(desc);
+    final ResultCreateStepsInner step = StepStorage.getCurrentStep();
+    step.action(Utils.getNameWithKeyword(name, keyword, this.emptyNameReplacement));
+    if (!desc.isEmpty()) {
+      step.comment(desc);
+    }
   }
 
   @Override
