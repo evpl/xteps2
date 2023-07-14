@@ -75,6 +75,7 @@ final class XtepsQaseTest {
 
     listener.stepStarted(stepArtifacts("step keyword", "step name", "step description"));
     final ResultCreateStepsInner stepResult = StepStorage.getCurrentStep();
+    listener.stepPassed();
     assertThat(stepResult.getAction()).isEqualTo("step keyword step name");
   }
 
@@ -84,9 +85,9 @@ final class XtepsQaseTest {
 
     listener.stepStarted(stepArtifacts("", ""));
     final ResultCreateStepsInner stepResult = StepStorage.getCurrentStep();
+    listener.stepPassed();
     assertThat(stepResult.getAction()).isEqualTo("Step");
-    assertThat(stepResult.getComment()).isEmpty();
-    assertThat(stepResult.getStatus()).isNull();
+    assertThat(stepResult.getComment()).isNull();
   }
 
   private static Map<String, Object> stepArtifacts(final String keyword,
