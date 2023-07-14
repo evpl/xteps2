@@ -15,10 +15,17 @@
  */
 package com.plugatar.xteps2.qase;
 
+import com.plugatar.xteps2.Artifacts;
+import com.plugatar.xteps2.core.Keyword;
+import io.qase.api.StepStorage;
+import io.qase.client.model.ResultCreateStepsInner;
 import org.junit.jupiter.api.Test;
 
-import static com.plugatar.xteps2.Steps.step;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link XtepsQase}.
@@ -26,7 +33,77 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 final class XtepsQaseTest {
 
   @Test
-  void test() {
-    assertThatCode(() -> step("Step", () -> { })).doesNotThrowAnyException();
+  void passedStep() {
+    final XtepsQase listener = new XtepsQase();
+
+    /* stepStarted method */
+    listener.stepStarted(stepArtifacts("step name", "step description"));
+    final ResultCreateStepsInner stepResult = StepStorage.getCurrentStep();
+    assertThat(stepResult.getAction()).isEqualTo("step name");
+    assertThat(stepResult.getComment()).isEqualTo("step description");
+    assertThat(stepResult.getStatus()).isNull();
+
+    /* stepPassed method */
+    listener.stepPassed();
+    assertThat(stepResult.getAttachments()).isNull();
+    assertThat(stepResult.getStatus()).isSameAs(ResultCreateStepsInner.StatusEnum.PASSED);
+  }
+
+  @Test
+  void failedStep() {
+    final XtepsQase listener = new XtepsQase();
+    final Throwable stepException = new Throwable("test ex");
+
+    /* stepStarted method */
+    listener.stepStarted(stepArtifacts("step name", "step description"));
+    final ResultCreateStepsInner stepResult = StepStorage.getCurrentStep();
+    assertThat(stepResult.getAction()).isEqualTo("step name");
+    assertThat(stepResult.getComment()).isEqualTo("step description");
+    assertThat(stepResult.getStatus()).isNull();
+
+    /* stepPassed method */
+    listener.stepFailed(stepException);
+    final List<String> attachments = stepResult.getAttachments();
+    assertThat(attachments).isNotNull().hasSize(1);
+    assertThat(attachments.get(0)).startsWith("java.lang.Throwable: test ex");
+    assertThat(stepResult.getStatus()).isSameAs(ResultCreateStepsInner.StatusEnum.FAILED);
+  }
+
+  @Test
+  void stepWithKeyword() {
+    final XtepsQase listener = new XtepsQase();
+
+    listener.stepStarted(stepArtifacts("step keyword", "step name", "step description"));
+    final ResultCreateStepsInner stepResult = StepStorage.getCurrentStep();
+    assertThat(stepResult.getAction()).isEqualTo("step keyword step name");
+  }
+
+  @Test
+  void emptyNameAndDescription() {
+    final XtepsQase listener = new XtepsQase();
+
+    listener.stepStarted(stepArtifacts("", ""));
+    final ResultCreateStepsInner stepResult = StepStorage.getCurrentStep();
+    assertThat(stepResult.getAction()).isEqualTo("Step");
+    assertThat(stepResult.getComment()).isEmpty();
+    assertThat(stepResult.getStatus()).isNull();
+  }
+
+  private static Map<String, Object> stepArtifacts(final String keyword,
+                                                   final String name,
+                                                   final String desc) {
+    final Map<String, Object> artifacts = new HashMap<>();
+    artifacts.put(Artifacts.keywordArtifact(), new Keyword.Of(keyword));
+    artifacts.put(Artifacts.nameArtifact(), name);
+    artifacts.put(Artifacts.descArtifact(), desc);
+    return artifacts;
+  }
+
+  private static Map<String, Object> stepArtifacts(final String name,
+                                                   final String desc) {
+    final Map<String, Object> artifacts = new HashMap<>();
+    artifacts.put(Artifacts.nameArtifact(), name);
+    artifacts.put(Artifacts.descArtifact(), desc);
+    return artifacts;
   }
 }
