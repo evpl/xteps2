@@ -30,6 +30,7 @@
     <module>xteps2-extentreports</module>
     <module>xteps2-qase</module>
     <module>xteps2-reportportal</module>
+    <module>xteps2-selenide</module>
     <module>xteps2-testit</module>
   </modules>
 
@@ -102,6 +103,11 @@
       </dependency>
       <dependency>
         <groupId>com.plugatar.xteps2</groupId>
+        <artifactId>xteps2-selenide</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.plugatar.xteps2</groupId>
         <artifactId>xteps2-testit</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -131,6 +137,11 @@
         <groupId>com.epam.reportportal</groupId>
         <artifactId>client-java</artifactId>
         <version>5.1.22</version>
+      </dependency>
+      <dependency>
+        <groupId>com.codeborne</groupId>
+        <artifactId>selenide</artifactId>
+        <version>6.16.0</version>
       </dependency>
       <dependency>
         <groupId>ru.testit</groupId>
